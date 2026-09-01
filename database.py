@@ -1,25 +1,39 @@
-from dotenv import load_dotenv
 import os
 import pymysql
+from dotenv import load_dotenv
 
 load_dotenv()
 
-config = {'host': os.getenv("MYSQL_EDIT_HOST"),
-          'port': int(os.getenv("MYSQL_EDIT_PORT", 3306)),
-          'user': os.getenv("MYSQL_EDIT_USER"),
-          'password': os.getenv("MYSQL_EDIT_PASSWORD"),
-          'database': os.getenv("MYSQL_EDIT_DB"),
-          }
+db_name = os.getenv("MYSQL_DB_NAME", "bookstore_test")
 
-db_name = config.get("database")
+# read — SELECT only (viewing books, login)
+config_read = {
+    'host': os.getenv("MYSQL_READ_HOST"),
+    'port': int(os.getenv("MYSQL_READ_PORT", 3306)),
+    'user': os.getenv("MYSQL_READ_USER"),
+    'password': os.getenv("MYSQL_READ_PASSWORD"),
+}
+
+# edit — INSERT/UPDATE (registration, purchase, book downloading, database creation)
+config_edit = {
+    'host': os.getenv("MYSQL_EDIT_HOST"),
+    'port': int(os.getenv("MYSQL_EDIT_PORT", 3306)),
+    'user': os.getenv("MYSQL_EDIT_USER"),
+    'password': os.getenv("MYSQL_EDIT_PASSWORD"),
+}
 
 
-def get_connection():
-    return pymysql.connect(**config)
+def get_read_connection():
+    return pymysql.connect(**config_read)
+
+
+def get_edit_connection():
+    return pymysql.connect(**config_edit)
 
 
 def init_db():
-    with get_connection() as connection:
+    """Creates the database and tables. Requires an edit user with the CREATE privilege."""
+    with get_edit_connection() as connection:
         with connection.cursor() as cursor:
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
             cursor.execute(f"USE {db_name}")
@@ -54,3 +68,4 @@ def init_db():
                     FOREIGN KEY (book_id) REFERENCES books(id)
                 )
             """)
+        connection.commit()
