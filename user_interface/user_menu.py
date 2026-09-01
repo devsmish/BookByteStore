@@ -3,7 +3,7 @@ from services.search_logs import show_popular_queries, log_search
 from db.books import get_all_books, view_books
 
 
-def user_menu(connection, user_id):
+def user_menu(read_connection, edit_connection, user_id):
     while True:
         print("\n--- User Menu ---")
         print("1. View books")
@@ -15,7 +15,7 @@ def user_menu(connection, user_id):
         choice = input("Choice: ")
 
         if choice == "1":
-            books_list = get_all_books(connection)
+            books_list = get_all_books(read_connection)
             view_books(books_list)
 
         elif choice == "2":
@@ -23,7 +23,7 @@ def user_menu(connection, user_id):
             log_search(query)
 
         elif choice == "3":
-            purchase_book(connection, user_id)
+            purchase_book(read_connection, edit_connection, user_id)
 
         elif choice == "4":
             show_popular_queries()
