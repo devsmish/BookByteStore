@@ -31,4 +31,3 @@ def decrease_balance(connection, user_id, amount):
         """, (amount, user_id, amount))
 
         return cursor.rowcount
-    
