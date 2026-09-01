@@ -2,10 +2,10 @@ from database import db_name
 from db import books, users, purchases
 
 
-def load_books_from_file(connection, filename):
+def load_books_from_file(edit_connection, filename):
     added = 0
     with open(filename, encoding='utf-8') as file:
-        with connection.cursor() as cursor:
+        with edit_connection.cursor() as cursor:
             cursor.execute(f"USE {db_name}")
             for line in file:
                 parts = line.strip().split(",")
@@ -33,12 +33,12 @@ def load_books_from_file(connection, filename):
                         VALUES (%s, %s, %s, %s)
                     """, (title, author, price, stock))
                 added += stock
-    connection.commit()
+    edit_connection.commit()
     print(f"{added} new books loaded.")
 
 
-def purchase_book(connection, user_id):
-    book_list = books.get_all_books(connection)
+def purchase_book(read_connection, edit_connection, user_id):
+    book_list = books.get_all_books(read_connection)
 
     if not book_list:
         print("No books available.")
@@ -67,8 +67,9 @@ def purchase_book(connection, user_id):
     total_price = price * quantity
 
     try:
-        stock_updated = books.decrease_stock(connection, book_id, quantity)
-        balance_updated = users.decrease_balance(connection, user_id, total_price)
+        # Atomicity via conditions in UPDATE + a single transaction for edit_connection.
+        stock_updated = books.decrease_stock(edit_connection, book_id, quantity)
+        balance_updated = users.decrease_balance(edit_connection, user_id, total_price)
 
         if not stock_updated:
             raise Exception("Stock error")
@@ -76,11 +77,11 @@ def purchase_book(connection, user_id):
         if not balance_updated:
             raise Exception("Balance error")
 
-        purchases.add_purchase(connection, user_id, book_id, quantity)
+        purchases.add_purchase(edit_connection, user_id, book_id, quantity)
 
-        connection.commit()
+        edit_connection.commit()
         print("Purchase successful.")
 
     except Exception:
-        connection.rollback()
+        edit_connection.rollback()
         print("Transaction failed.")

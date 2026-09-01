@@ -1,11 +1,15 @@
 import os
-
 from pymongo import MongoClient
 from collections import Counter
+from dotenv import load_dotenv
+
+load_dotenv()
 
 client = MongoClient(os.getenv("MONGO_URI"))
 
-collection = client[os.getenv("MONGO_DATABASE")][os.getenv("MONGO_COLLECTION")]
+collection = client[os.getenv("MONGO_DB_NAME", "ich_edit")][
+    os.getenv("MONGO_COLLECTION_NAME", "bookstore_logs_searches")
+]
 
 
 def log_search(query):
