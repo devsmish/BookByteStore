@@ -2,8 +2,12 @@ from db import users
 
 
 def register(edit_connection):
-    username = input("Enter username: ")
-    password = input("Enter password: ")
+    username = input("Enter username: ").strip()
+    password = input("Enter password: ").strip()
+
+    if not username or not password:
+        print("Username and password cannot be empty")
+        return
 
     try:
         balance = float(input("Enter balance: "))
