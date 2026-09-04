@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-db_name = os.getenv("MYSQL_DB_NAME", "bookstore_test")
+db_name = os.getenv("MYSQL_DB_NAME")
 
 # read — SELECT only (viewing books, login)
 config_read = {
@@ -23,12 +23,31 @@ config_edit = {
 }
 
 
+class DatabaseConnectionError(Exception):
+    """A clear error message instead of a raw traceback from PyMySQL."""
+
+
+def _connect(config, role):
+    missing = [k for k in ("host", "user", "password") if not config.get(k)]
+    if missing:
+        raise DatabaseConnectionError(
+            f"Environment variables for the {role} connection are not set: "
+            f"{', '.join(f'MYSQL_{role.upper()}_{m.upper()}' for m in missing)}. "
+            f"Check the .env file!!!"
+        )
+    try:
+        return pymysql.connect(**config)
+    except pymysql.err.OperationalError as e:
+        raise DatabaseConnectionError(
+            f"Failed to connect to MySQL ({role}, host={config['host']}): {e}"
+        ) from e
+
 def get_read_connection():
-    return pymysql.connect(**config_read)
+    return _connect(config_read, "read")
 
 
 def get_edit_connection():
-    return pymysql.connect(**config_edit)
+    return _connect(config_edit, "edit")
 
 
 def init_db():
@@ -48,11 +67,12 @@ def init_db():
                 )
             """)
 
+
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     username VARCHAR(100) UNIQUE,
-                    password VARCHAR(100),
+                    password VARCHAR(255),
                     balance DECIMAL(10,2) CHECK (balance >= 0)
                 )
             """)
@@ -68,4 +88,4 @@ def init_db():
                     FOREIGN KEY (book_id) REFERENCES books(id)
                 )
             """)
-        connection.commit()
+            connection.commit()
