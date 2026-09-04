@@ -24,7 +24,7 @@ connection.
 ## Structure
 
 ```
-bookstore_modules/
+BookByteStore/
 ├── database.py            # connection config (read/edit) from .env
 ├── main.py                # entry point
 ├── db/                    # low-level SQL queries
