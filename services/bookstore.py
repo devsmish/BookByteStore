@@ -26,6 +26,20 @@ def view_purchase_history(read_connection, user_id):
         print(f"{purchase_date} — {title} by {author}: {quantity} x ${price} = ${total}")
 
 
+def top_up_balance(edit_connection, user_id):
+    try:
+        amount = float(input("Enter top-up amount: "))
+        if amount <= 0:
+            raise ValueError
+    except ValueError:
+        print("Invalid amount.")
+        return
+
+    users.increase_balance(edit_connection, user_id, amount)
+    new_balance = users.get_balance(edit_connection, user_id)
+    print(f"Balance topped up. Current balance: ${new_balance}")
+
+
 def _read_book_input():
     title = input("Title: ").strip()
     author = input("Author: ").strip()
