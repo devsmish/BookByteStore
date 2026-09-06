@@ -73,7 +73,8 @@ def init_db():
                     id INT AUTO_INCREMENT PRIMARY KEY,
                     username VARCHAR(100) UNIQUE,
                     password VARCHAR(255),
-                    balance DECIMAL(10,2) CHECK (balance >= 0)
+                    balance DECIMAL(10,2) CHECK (balance >= 0),
+                    is_admin BOOLEAN NOT NULL DEFAULT FALSE
                 )
             """)
 
