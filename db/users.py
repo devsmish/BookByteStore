@@ -29,7 +29,7 @@ def get_user(connection, username, password):
     if not user:
         return None
 
-    stored_password = user[2]
+    stored_password = user[2]  # id, username, password, balance
     if not bcrypt.checkpw(password.encode("utf-8"), stored_password.encode("utf-8")):
         return None
 
@@ -45,3 +45,22 @@ def decrease_balance(connection, user_id, amount):
         """, (amount, user_id, amount))
 
         return cursor.rowcount
+
+
+def increase_balance(connection, user_id, amount):
+    with connection.cursor() as cursor:
+        cursor.execute("""
+            UPDATE users
+            SET balance = balance + %s
+            WHERE id = %s
+        """, (amount, user_id))
+        updated = cursor.rowcount
+    connection.commit()
+    return updated
+
+
+def get_balance(connection, user_id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT balance FROM users WHERE id = %s", (user_id,))
+        row = cursor.fetchone()
+        return row[0] if row else None
