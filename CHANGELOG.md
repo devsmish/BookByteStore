@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.3.0 — Real search, purchase history, admin panel - 06/09/2026
+
+### Added
+- Real book search by title/author (`LIKE` query in `db.books.search_books`); search and logging happen simultaneously
+- User purchase history (`5. Purchase history` in the menu) — JOIN `purchases` + `books`
+- Admin panel: add, edit, and delete books. Access is determined by the `ADMIN_USERNAMES` list in `.env`, rather than a database flag or user self-assignment
+
+### Changed
+- `auth.login` now returns `(user_id, username)` — the username is required to verify admin access
+- `user_menu` accepts `username` and displays the "Admin panel" option only for admins
+
+---
+
 ## v0.2.0 — Security - 04/09/2026
 
 ### Added
