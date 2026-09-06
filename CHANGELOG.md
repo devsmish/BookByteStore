@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.3.1 — User Balance Top-Up - 06/09/2026
+
+### Added
+- User balance top-up functionality (`6. Top up balance` in the menu) via `top_up_balance()` service method
+- Database functions `increase_balance()` and `get_balance()` in `db/users.py` to safely update and query user account funds
+
+### Changed
+- Shifted the "Admin panel" menu entry to `7. Admin panel` to accommodate the new top-up balance option
+
 ## v0.3.0 — Real search, purchase history, admin panel - 06/09/2026
 
 ### Added

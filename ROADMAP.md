@@ -17,6 +17,8 @@
 - Actual book search by title/author (currently, `log_search` only logs the query but does not filter the list)
 - Admin mode: manual addition/editing/deletion of books
 - User purchase history (data is already being written to `purchases` but is not currently read anywhere)
+
+## v0.3.1 — Balance
 - Balance top-up
 
 ## v0.4 — Tkinter GUI
