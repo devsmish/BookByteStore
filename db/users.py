@@ -29,7 +29,7 @@ def get_user(connection, username, password):
     if not user:
         return None
 
-    stored_password = user[2]  # id, username, password, balance
+    stored_password = user[2]
     if not bcrypt.checkpw(password.encode("utf-8"), stored_password.encode("utf-8")):
         return None
 

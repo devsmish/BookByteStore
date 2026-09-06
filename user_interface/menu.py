@@ -1,6 +1,6 @@
 from services import auth
 from services import bookstore
-from user_interface import user_menu
+from user_interface.user_menu import user_menu
 
 
 def main_menu(read_connection, edit_connection):
@@ -21,9 +21,10 @@ def main_menu(read_connection, edit_connection):
             auth.register(edit_connection)
 
         elif choice == "3":
-            user_id = auth.login(read_connection)
-            if user_id:
-                user_menu(read_connection, edit_connection, user_id)
+            login_result = auth.login(read_connection)
+            if login_result:
+                user_id, username = login_result
+                user_menu(read_connection, edit_connection, user_id, username)
 
         elif choice == "0":
             break
