@@ -34,4 +34,4 @@ def login(read_connection):
         return None
 
     print("Login successful")
-    return user[0]
+    return user[0], user[1]
