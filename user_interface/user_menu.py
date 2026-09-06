@@ -3,6 +3,7 @@ from services.bookstore import (
     purchase_book,
     search_books,
     view_purchase_history,
+    top_up_balance,
     admin_add_book,
     admin_update_book,
     admin_delete_book,
@@ -21,8 +22,9 @@ def user_menu(read_connection, edit_connection, user_id, username):
         print("3. Purchase")
         print("4. Popular searches")
         print("5. Purchase history")
+        print("6. Top up balance")
         if admin:
-            print("6. Admin panel")
+            print("7. Admin panel")
         print("0. Logout")
 
         choice = input("Choice: ")
@@ -44,7 +46,10 @@ def user_menu(read_connection, edit_connection, user_id, username):
         elif choice == "5":
             view_purchase_history(read_connection, user_id)
 
-        elif choice == "6" and admin:
+        elif choice == "6":
+            top_up_balance(edit_connection, user_id)
+
+        elif choice == "7" and admin:
             admin_menu(edit_connection)
 
         elif choice == "0":
