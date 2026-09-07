@@ -1,6 +1,6 @@
 import bcrypt
 
-from models import User
+from app.models import User
 
 
 class UserRepository:

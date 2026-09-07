@@ -1,4 +1,4 @@
-from exceptions import InvalidInputError, SearchLogError
+from app.exceptions import InvalidInputError, SearchLogError
 
 
 class CatalogService:

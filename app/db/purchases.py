@@ -1,4 +1,4 @@
-from models import Purchase
+from app.models import Purchase
 
 
 class PurchaseRepository:

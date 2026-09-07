@@ -5,7 +5,7 @@ from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
 
-from exceptions import SearchLogError
+from app.exceptions import SearchLogError
 
 load_dotenv()
 

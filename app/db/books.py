@@ -1,4 +1,4 @@
-from models import Book
+from app.models import Book
 
 
 class BookRepository:

@@ -1,5 +1,5 @@
-from exceptions import BookstoreError
-from user_interface.user_menu import UserMenu
+from app.exceptions import BookstoreError
+from app.user_interface.user_menu import UserMenu
 
 
 class ConsoleApp:

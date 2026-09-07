@@ -1,5 +1,5 @@
-from exceptions import BookstoreError
-from user_interface.formatting import print_books
+from app.exceptions import BookstoreError
+from app.user_interface.formatting import print_books
 
 
 class AdminMenu:

@@ -1,6 +1,6 @@
-from config import is_admin
-from exceptions import InvalidInputError, UsernameTakenError, InvalidCredentialsError
-from models import User
+from app.config import is_admin
+from app.exceptions import InvalidInputError, UsernameTakenError, InvalidCredentialsError
+from app.models import User
 
 
 class AuthService:
