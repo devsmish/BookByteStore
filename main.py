@@ -1,11 +1,19 @@
-from database import (
+from app.database import (
     get_read_connection,
     get_edit_connection,
     init_db,
     db_name,
     DatabaseConnectionError,
 )
-from user_interface.menu import main_menu
+from app.db.books import BookRepository
+from app.db.users import UserRepository
+from app.db.purchases import PurchaseRepository
+from app.services.search_logs import SearchLogRepository
+from app.services.auth import AuthService
+from app.services.catalog_service import CatalogService
+from app.services.purchase_service import PurchaseService
+from app.services.admin_service import AdminService
+from app.user_interface.console_app import ConsoleApp
 
 
 def main():
@@ -18,7 +26,20 @@ def main():
             with edit_connection.cursor() as cursor:
                 cursor.execute(f"USE {db_name}")
 
-            main_menu(read_connection, edit_connection)
+            book_repository = BookRepository(read_connection, edit_connection)
+            user_repository = UserRepository(read_connection, edit_connection)
+            purchase_repository = PurchaseRepository(read_connection, edit_connection)
+            search_log_repository = SearchLogRepository()
+
+            auth_service = AuthService(user_repository)
+            catalog_service = CatalogService(book_repository, search_log_repository)
+            purchase_service = PurchaseService(
+                book_repository, user_repository, purchase_repository, edit_connection
+            )
+            admin_service = AdminService(book_repository)
+
+            app = ConsoleApp(auth_service, catalog_service, purchase_service, admin_service)
+            app.run()
 
     except DatabaseConnectionError as e:
         print(f"Database connection error: {e}")
