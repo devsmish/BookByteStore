@@ -21,8 +21,16 @@
 ## v0.3.1 — Balance
 - Balance top-up
 
-## v0.4 — Tkinter GUI
-- `gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
+## v0.4 — Transition to OOP (complete)
+- `../app/models.py`: `Book`, `User`, and `Purchase` implemented as dataclass models
+- `../app/exceptions.py`: domain-specific exceptions used instead of `print` statements within business logic
+- `../app/db/`: `BookRepository`, `UserRepository`, and `PurchaseRepository` — classes manage their own read/edit connections
+- `../app/services/`: `AuthService`, `CatalogService`, `PurchaseService`, `AdminService`, and `SearchLogRepository` — business logic only; no `input()` or `print()` calls
+- `../app/user_interface/`: `ConsoleApp`, `UserMenu`, and `AdminMenu` — all input/output handled here
+- "Load books from file" moved from the main menu to the admin panel (requires administrator login)
+
+## v0.5 — Tkinter GUI
+- `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
 - Screens: login/registration → book catalog → purchase → history
 - CLI (`user_interface`) remains as an alternative startup mode (`--cli`))
 
