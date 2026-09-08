@@ -25,12 +25,28 @@ connection.
 
 ```
 BookByteStore/
-├── database.py            # connection config (read/edit) from .env
-├── main.py                # entry point
-├── db/                    # low-level SQL queries
-├── services/              # business logic (auth, purchases, book downloads, search logs)
-├── user_interface/        # console menus
-└── gui/                   # (plan) Tkinter-interface
+├── main.py                    # entry point, assembling repositories/services
+    app/
+    ├── database.py            # connection config (read/edit) from .env
+    ├── config.py               # list of admins (ADMIN_USERNAMES) from .env
+    ├── models.py                # domain models: Book, User, Purchase
+    ├── exceptions.py             # domain exceptions
+    ├── db/                          # repositories — MySQL operations
+    │   ├── books.py                  # BookRepository
+    │   ├── users.py                   # UserRepository
+    │   └── purchases.py                # PurchaseRepository
+    ├── services/                        # business logic (no input()/print())
+    │   ├── auth.py                       # AuthService
+    │   ├── catalog_service.py             # CatalogService (browsing, searching)
+    │   ├── purchase_service.py             # PurchaseService (purchasing, history, balance)
+    │   ├── admin_service.py                 # AdminService (book CRUD, file import)
+    │   └── search_logs.py                    # SearchLogRepository (MongoDB)
+    ├── user_interface/                         # console UI — all input()/print() here
+    │   ├── console_app.py                        # ConsoleApp: registration/login
+    │   ├── user_menu.py                           # UserMenu
+    │   ├── admin_menu.py                           # AdminMenu
+    │   └── formatting.py                            # shared output functions
+    └── gui/                                          # (planned) Tkinter interface
 ```
 
 ## Configuration (.env)
