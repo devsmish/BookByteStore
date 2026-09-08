@@ -1,5 +1,6 @@
 from app.exceptions import InvalidInputError, BookNotFoundError
 from app.models import Book
+from app.money import parse_money
 
 
 class AdminService:
@@ -35,10 +36,13 @@ class AdminService:
             for line in file:
                 parts = line.strip().split(",")
                 if len(parts) != 4:
-                    continue  # пропускаем некорректные строки
+                    continue  # skip invalid lines
                 title, author, price, stock = parts
-                price = float(price)
-                stock = int(stock)
+                try:
+                    price = parse_money(price)
+                    stock = int(stock)
+                except ValueError:
+                    continue  # skip rows with an invalid price/stock level
                 self._books.upsert_by_title_author(title.strip(), author.strip(), price, stock)
                 added += stock
         self._books.commit()
