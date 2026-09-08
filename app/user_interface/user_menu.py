@@ -1,4 +1,5 @@
 from app.exceptions import BookstoreError
+from app.money import parse_money
 from app.user_interface.admin_menu import AdminMenu
 from app.user_interface.formatting import print_books
 
@@ -105,7 +106,7 @@ class UserMenu:
 
     def _top_up(self):
         try:
-            amount = float(input("Enter top-up amount: "))
+            amount = parse_money(input("Enter top-up amount: "))
             new_balance = self._purchase.top_up(self._user.id, amount)
             print(f"Balance topped up. Current balance: ${new_balance}")
         except (BookstoreError, ValueError) as e:
