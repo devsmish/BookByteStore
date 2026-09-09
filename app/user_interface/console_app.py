@@ -1,4 +1,5 @@
 from app.exceptions import BookstoreError
+from app.money import parse_money
 from app.user_interface.user_menu import UserMenu
 
 
@@ -29,7 +30,7 @@ class ConsoleApp:
         username = input("Enter username: ")
         password = input("Enter password: ")
         try:
-            balance = float(input("Enter balance: "))
+            balance = parse_money(input("Enter balance: "))
         except ValueError:
             print("Invalid balance")
             return

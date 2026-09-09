@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from decimal import Decimal
 
 
 @dataclass
@@ -6,7 +7,7 @@ class Book:
     id: int | None
     title: str
     author: str
-    price: float
+    price: Decimal
     stock: int
 
 
@@ -14,7 +15,7 @@ class Book:
 class User:
     id: int
     username: str
-    balance: float
+    balance: Decimal
     is_admin: bool = False
 
 
@@ -24,5 +25,5 @@ class Purchase:
     title: str
     author: str
     quantity: int
-    price: float
-    total: float
+    price: Decimal
+    total: Decimal

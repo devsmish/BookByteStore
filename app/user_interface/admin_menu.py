@@ -1,5 +1,6 @@
 from app.exceptions import BookstoreError
 from app.user_interface.formatting import print_books
+from app.money import parse_money
 
 
 class AdminMenu:
@@ -34,12 +35,12 @@ class AdminMenu:
             author = input(f"Author [{defaults.author}]: ").strip() or defaults.author
             price_input = input(f"Price [{defaults.price}]: ").strip()
             stock_input = input(f"Stock [{defaults.stock}]: ").strip()
-            price = float(price_input) if price_input else float(defaults.price)
+            price = parse_money(price_input) if price_input else defaults.price
             stock = int(stock_input) if stock_input else defaults.stock
         else:
             title = input("Title: ").strip()
             author = input("Author: ").strip()
-            price = float(input("Price: "))
+            price = parse_money(input("Price: "))
             stock = int(input("Stock: "))
         return title, author, price, stock
 
