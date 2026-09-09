@@ -21,13 +21,19 @@
 ## v0.3.1 — Balance
 - Balance top-up
 
-## v0.4 — Transition to OOP (complete)
+## v0.4 — Transition to OOP
 - `../app/models.py`: `Book`, `User`, and `Purchase` implemented as dataclass models
 - `../app/exceptions.py`: domain-specific exceptions used instead of `print` statements within business logic
 - `../app/db/`: `BookRepository`, `UserRepository`, and `PurchaseRepository` — classes manage their own read/edit connections
 - `../app/services/`: `AuthService`, `CatalogService`, `PurchaseService`, `AdminService`, and `SearchLogRepository` — business logic only; no `input()` or `print()` calls
 - `../app/user_interface/`: `ConsoleApp`, `UserMenu`, and `AdminMenu` — all input/output handled here
 - "Load books from file" moved from the main menu to the admin panel (requires administrator login)
+
+## v0.4.1 — Using Decimal instead of float for monetary values
+- [x] `money.py`: `parse_money()` — parses user input into `Decimal`, using `ROUND_HALF_UP` rounding to 2 decimal places (matching `DECIMAL(10,2)` in the schema)
+- [x] `models.py`: `Book.price`, `User.balance`, `Purchase.price/total` — typed as `Decimal`
+- [x] All 5 locations handling monetary input (`console_app._register`, `admin_menu._read_book_fields`×2, `user_menu._top_up`, `admin_service.import_from_file`) have been switched from `float()` to `parse_money()`
+- [x] Also: invalid price/balance values in the import file are now silently skipped (similar to how lines of incorrect length were previously skipped) instead of causing the entire import to fail
 
 ## v0.5 — Tkinter GUI
 - `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic

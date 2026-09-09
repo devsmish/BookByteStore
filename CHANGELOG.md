@@ -1,20 +1,33 @@
 # Changelog
 
-## v0.4 — OOP refactor - 08/09/2026
+## v0.4.1 — Decimal for money - 09/09/2026
 
 ### Added
-- `../app/models.py` — `Book`, `User`, `Purchase` как dataclasses
-- `../app/exceptions.py` — доменные исключения (`UsernameTakenError`, `InsufficientStockError`, `BookNotFoundError` и др.)
-- `../app/services/catalog_service.py`, `../app/services/purchase_service.py`, `../app/services/admin_service.py` — бизнес-логика, вынесенная из `../app/services/bookstore.py`
+- `money.py` — `parse_money()`: parses monetary input into a `Decimal`, rounding to 2 decimal places using `ROUND_HALF_UP`
+
+### Changed
+- `models.py`: `Book.price`, `User.balance`, `Purchase.price`/`total` — now use `Decimal` instead of `float`
+- All monetary input points (registration, topping up balance, adding/editing a book, importing from a file) now use `parse_money()` instead of `float()`
+- `admin_service.import_from_file`: rows with invalid price/stock values are now skipped instead of causing the import to fail with an exception
+
+### Fixed
+- Resolved the risk of `TypeError` when mixing `Decimal` (values read from MySQL `DECIMAL` columns—pymysql returns them as `Decimal` by default) and `float` (user-entered values) in a single arithmetic expression
+
+## v0.4.0 — OOP refactor - 08/09/2026
+
+### Added
+- `../app/models.py` — `Book`, `User`, and `Purchase` defined as dataclasses
+- `../app/exceptions.py` — domain-specific exceptions (`UsernameTakenError`, `InsufficientStockError`, `BookNotFoundError`, etc.)
+- `../app/services/catalog_service.py`, `../app/services/purchase_service.py`, `../app/services/admin_service.py` — business logic extracted from `../app/services/bookstore.py`
 - `../app/user_interface/console_app.py`, `admin_menu.py`, `formatting.py`
 
 ### Changed
-- `../app/db/books.py`, `../app/db/users.py`, `../app/db/purchases.py`, `../app/services/search_logs.py`, `../app/services/auth.py` переписаны как классы-репозитории/сервисы; репозитории сами хранят read/edit-подключения вместо передачи нужного соединения вручную в каждом вызове
-- Сервисы больше не содержат `input()`/`print()` — только данные и исключения; весь ввод-вывод теперь в `../app/user_interface/`
-- **Поведенческое изменение:** "Load books from file" перенесён из главного меню (без логина) в админ-панель — массовая запись в БД теперь требует прав администратора
+- `../app/db/books.py`, `../app/db/users.py`, `../app/db/purchases.py`, `../app/services/search_logs.py`, and `../app/services/auth.py` rewritten as repository/service classes; repositories now manage their own read/edit connections internally instead of requiring a connection to be passed manually with every call
+- Services no longer contain `input()` or `print()` calls—only data and exceptions; all I/O is now handled in `../app/user_interface/`
+- **Behavioral change:** "Load books from file" moved from the main menu (pre-login) to the admin panel—bulk database writes now require administrator privileges
 
 ### Removed
-- `../app/services/bookstore.py`, `../app/user_interface/menu.py` (функциональность распределена по новым файлам)
+- `../app/services/bookstore.py`, `../app/user_interface/menu.py` (functionality distributed across new files)
 
 ---
 
