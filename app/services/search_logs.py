@@ -6,8 +6,11 @@ from pymongo.errors import PyMongoError
 from dotenv import load_dotenv
 
 from app.exceptions import SearchLogError
+from app.logging_config import get_logger
 
 load_dotenv()
+
+logger = get_logger(__name__)
 
 
 class SearchLogRepository:
@@ -24,12 +27,14 @@ class SearchLogRepository:
         try:
             self._collection.insert_one({"query": query})
         except PyMongoError as e:
+            logger.warning("Failed to log search query %r: %s", query, e)
             raise SearchLogError(str(e)) from e
 
     def popular(self, limit=5):
         try:
             queries = [doc["query"] for doc in self._collection.find() if doc.get("query")]
         except PyMongoError as e:
+            logger.warning("Failed to fetch popular queries: %s", e)
             raise SearchLogError(str(e)) from e
 
         return Counter(queries).most_common(limit)
