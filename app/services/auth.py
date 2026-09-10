@@ -1,7 +1,10 @@
 from app.config import is_admin
 from app.exceptions import InvalidInputError, UsernameTakenError, InvalidCredentialsError
 from app.models import User
+from app.logging_config import get_logger
 
+
+logger = get_logger(__name__)
 
 class AuthService:
     def __init__(self, user_repository):
@@ -16,14 +19,19 @@ class AuthService:
         if balance < 0:
             raise InvalidInputError("Balance cannot be negative")
         if self._users.username_exists(username):
+            logger.info("Registration failed: username '%s' already taken", username)
             raise UsernameTakenError(username)
 
         user_id = self._users.create(username, password, balance)
+        logger.info("New user registered: '%s' (id=%s)", username, user_id)
         return User(id=user_id, username=username, balance=balance, is_admin=is_admin(username))
 
     def login(self, username, password):
-        user = self._users.authenticate(username.strip(), password.strip())
+        username = username.strip()
+        user = self._users.authenticate(username, password.strip())
         if not user:
+            logger.warning("Failed login attempt for username '%s'", username)
             raise InvalidCredentialsError()
         user.is_admin = is_admin(user.username)
+        logger.info("User '%s' logged in%s", user.username, " as admin" if user.is_admin else "")
         return user
