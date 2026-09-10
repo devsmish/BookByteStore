@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.2 — Logging - 10/09/2026
+
+### Added
+- `logging_config.py` — `bookstore` logger with file rotation (`LOG_FILE`/`LOG_LEVEL` from `.env`) and duplication of `WARNING+` level logs to the console
+- `main.py` — top-level exception handling: unexpected exceptions are logged via `logger.exception()`, and a user-friendly message is displayed instead of a traceback
+
+### Changed
+- `database.py`, `services/search_logs.py`, `services/auth.py`, `services/purchase_service.py`, `services/admin_service.py` — events and errors (registration, login, purchases, top-ups, admin actions, connection failures) are now logged, replacing previous practices of either not recording them at all or outputting them via `print` statements within the business logic
+- `services/purchase_service.py`: logging for failed purchases now covers the initial stock check (prior to the transaction start), not just failures occurring within the transaction itself
+
+---
+
 ## v0.4.1 — Decimal for money - 09/09/2026
 
 ### Added

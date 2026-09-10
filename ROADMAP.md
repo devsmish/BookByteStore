@@ -35,6 +35,16 @@
 - [x] All 5 locations handling monetary input (`console_app._register`, `admin_menu._read_book_fields`×2, `user_menu._top_up`, `admin_service.import_from_file`) have been switched from `float()` to `parse_money()`
 - [x] Also: invalid price/balance values in the import file are now silently skipped (similar to how lines of incorrect length were previously skipped) instead of causing the entire import to fail
 
+## v0.4.2 — switched from `print` to `logging` for errors/events (done)
+- [x] `logging_config.py`: `bookstore` logger with file rotation (`LOG_FILE`, defaults to `bookstore.log`) + `WARNING+` output to console
+- [x] `database.py`: connection errors logged before being wrapped in `DatabaseConnectionError`
+- [x] `services/search_logs.py`: MongoDB errors logged as `WARNING`
+- [x] `services/auth.py`: registration/login (success and failure) — `INFO`/`WARNING`, passwords excluded from logs
+- [x] `services/purchase_service.py`: purchases and top-ups — `INFO`; failed purchases (including early stock checks, not just transaction failures) — `WARNING`
+- [x] `services/admin_service.py`: adding/editing/deleting books, file imports — `INFO`
+- [x] `main.py`: unhandled exceptions no longer crash the app with a raw traceback; logged via `logger.exception()`, user sees a clear message
+- [x] `*.log` added to `.gitignore`
+- 
 ## v0.5 — Tkinter GUI
 - `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
 - Screens: login/registration → book catalog → purchase → history
