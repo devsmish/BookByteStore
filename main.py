@@ -14,9 +14,15 @@ from app.services.catalog_service import CatalogService
 from app.services.purchase_service import PurchaseService
 from app.services.admin_service import AdminService
 from app.user_interface.console_app import ConsoleApp
+from app.logging_config import setup_logging, get_logger
 
+
+logger = get_logger(__name__)
 
 def main():
+    setup_logging()
+    logger.info("Application starting")
+
     try:
         init_db()
 
@@ -42,7 +48,13 @@ def main():
             app.run()
 
     except DatabaseConnectionError as e:
+        logger.error("Startup failed: %s", e)
         print(f"Database connection error: {e}")
+    except Exception:
+        logger.exception("Unexpected error")
+        print("An unexpected error occurred. Details have been recorded in the log.")
+    finally:
+        logger.info("Application stopped")
 
 
 if __name__ == "__main__":

@@ -2,7 +2,11 @@ import os
 import pymysql
 from dotenv import load_dotenv
 
+from app.logging_config import get_logger
+
 load_dotenv()
+
+logger = get_logger(__name__)
 
 db_name = os.getenv("MYSQL_DB_NAME")
 
@@ -30,14 +34,17 @@ class DatabaseConnectionError(Exception):
 def _connect(config, role):
     missing = [k for k in ("host", "user", "password") if not config.get(k)]
     if missing:
+        env_vars = ", ".join(f"MYSQL_{role.upper()}_{m.upper()}" for m in missing)
+        logger.error("Missing env vars for %s connection: %s", role, env_vars)
         raise DatabaseConnectionError(
             f"Environment variables for the {role} connection are not set: "
-            f"{', '.join(f'MYSQL_{role.upper()}_{m.upper()}' for m in missing)}. "
+            f"{env_vars}. "
             f"Check the .env file!!!"
         )
     try:
         return pymysql.connect(**config)
     except pymysql.err.OperationalError as e:
+        logger.error("Failed to connect to MySQL (%s, host=%s): %s", role, config['host'], e)
         raise DatabaseConnectionError(
             f"Failed to connect to MySQL ({role}, host={config['host']}): {e}"
         ) from e
