@@ -49,6 +49,7 @@ def _connect(config, role):
             f"Failed to connect to MySQL ({role}, host={config['host']}): {e}"
         ) from e
 
+
 def get_read_connection():
     return _connect(config_read, "read")
 
@@ -70,10 +71,17 @@ def init_db():
                     title VARCHAR(200),
                     author VARCHAR(100),
                     price DECIMAL(10,2),
-                    stock INT CHECK (stock >= 0)
+                    stock INT CHECK (stock >= 0),
+                    deleted_at DATETIME NULL DEFAULT NULL
                 )
             """)
 
+            # Migration for databases created before the introduction of soft deletes.
+            # Requires MySQL >= 8.0.29 / MariaDB >= 10.0.2
+            cursor.execute("""
+                ALTER TABLE books
+                ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL DEFAULT NULL
+            """)
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (
