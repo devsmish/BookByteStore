@@ -9,6 +9,7 @@ class Book:
     author: str
     price: Decimal
     stock: int
+    deleted_at: object = None
 
 
 @dataclass
