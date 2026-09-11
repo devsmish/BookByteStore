@@ -14,6 +14,7 @@ class AdminMenu:
             print("2. Edit book")
             print("3. Delete book")
             print("4. Load books from file")
+            print("5. Restore deleted book")
             print("0. Back")
 
             choice = input("Choice: ")
@@ -26,6 +27,8 @@ class AdminMenu:
                 self._delete_book()
             elif choice == "4":
                 self._import_from_file()
+            elif choice == "5":
+                self._restore_book()
             elif choice == "0":
                 return
 
@@ -104,3 +107,25 @@ class AdminMenu:
             print(f"File not found: {filename}")
         except (BookstoreError, ValueError) as e:
             print(f"Could not import books: {e}")
+
+    def _restore_book(self):
+        deleted_books = self._admin.list_deleted_books()
+        if not deleted_books:
+            print("No deleted books.")
+            return
+
+        print("Deleted books:")
+        for i, book in enumerate(deleted_books, 1):
+            print(f"{i}. {book.title} by {book.author} (deleted at {book.deleted_at})")
+
+        try:
+            index = int(input("Enter book number to restore: ")) - 1
+            if not (0 <= index < len(deleted_books)):
+                print("Invalid book number.")
+                return
+
+            book = deleted_books[index]
+            self._admin.restore_book(book.id)
+            print("Book restored.")
+        except (BookstoreError, ValueError) as e:
+            print(f"Could not restore book: {e}")
