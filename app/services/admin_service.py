@@ -3,8 +3,8 @@ from app.models import Book
 from app.money import parse_money
 from app.logging_config import get_logger
 
-
 logger = get_logger(__name__)
+
 
 class AdminService:
     def __init__(self, book_repository):
@@ -34,7 +34,15 @@ class AdminService:
     def delete_book(self, book_id):
         if not self._books.delete(book_id):
             raise BookNotFoundError(book_id)
-        logger.info("Admin deleted book #%s", book_id)
+        logger.info("Admin deleted (soft) book #%s", book_id)
+
+    def list_deleted_books(self):
+        return self._books.get_deleted()
+
+    def restore_book(self, book_id):
+        if not self._books.restore(book_id):
+            raise BookNotFoundError(book_id)
+        logger.info("Admin restored book #%s", book_id)
 
     def import_from_file(self, filename):
         added = 0
