@@ -44,7 +44,14 @@
 - [x] `services/admin_service.py`: adding/editing/deleting books, file imports — `INFO`
 - [x] `main.py`: unhandled exceptions no longer crash the app with a raw traceback; logged via `logger.exception()`, user sees a clear message
 - [x] `*.log` added to `.gitignore`
-- 
+
+## v0.4.3 — Soft delete for books (complete)
+- [x] `books.deleted_at DATETIME NULL` in schema + migration for existing databases (`ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, MySQL ≥ 8.0.29 / MariaDB ≥ 10.0.2)
+- [x] `BookRepository.delete()` — `UPDATE ... SET deleted_at = NOW()` instead of `DELETE`
+- [x] All read queries (`get_all`, `search`, `get_by_id`, `decrease_stock`) filter by `deleted_at IS NULL` — deleted books are not visible in the catalog and cannot be purchased
+- [x] `get_deleted()` / `restore()` in the repository, `list_deleted_books()` / `restore_book()` in `AdminService`, "5. Restore deleted book" option in the admin panel
+- [x] Verified: purchase → soft delete → book hidden from catalog and unavailable for purchase → **purchase history remains intact** → restoration returns the book to the catalog
+ 
 ## v0.5 — Tkinter GUI
 - `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
 - Screens: login/registration → book catalog → purchase → history

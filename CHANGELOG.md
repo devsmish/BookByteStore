@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.4.3 — Soft delete for books - 12/09/2026
+
+### Added
+- `books.deleted_at DATETIME NULL` — new column (with a migration for existing databases using `ADD COLUMN IF NOT EXISTS`)
+- `BookRepository.get_deleted()` / `.restore()`
+- `AdminService.list_deleted_books()` / `.restore_book()`
+- "5. Restore deleted book" option in the admin panel
+
+### Changed
+- `BookRepository.delete()` now performs `UPDATE ... SET deleted_at = NOW()` instead of `DELETE FROM books`
+- `get_all`, `search`, `get_by_id`, `decrease_stock`, `update`, and `upsert_by_title_author` — all filter by/account for `deleted_at IS NULL` so that deleted books do not interfere with catalog operations, while their records are preserved for purchase history
+
+### Fixed
+- Deleting a book no longer breaks past purchase history — the record remains in the table, and the `JOIN` in `PurchaseRepository.get_by_user` continues to retrieve the title, author, and price even for deleted books
+
+---
+
 ## v0.4.2 — Logging - 10/09/2026
 
 ### Added
