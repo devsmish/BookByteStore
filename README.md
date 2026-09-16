@@ -18,6 +18,11 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
+## Running Tests
+```bash
+pytest
+```
+
 ## Launch
 
 ```bash
@@ -32,6 +37,7 @@ connection.
 ```
 BookByteStore/
 ├── main.py                    # entry point, assembling repositories/services & global exception handling
+├── pytest.ini                 # pytest suite configuration
     app/
     ├── database.py            # connection config (read/edit) from .env, connection error logging & DB initialization/migrations
     ├── config.py               # list of admins (ADMIN_USERNAMES) from .env
@@ -55,6 +61,16 @@ BookByteStore/
     │   ├── admin_menu.py                           # AdminMenu (includes option to view & restore deleted books)
     │   └── formatting.py                            # shared output functions
     └── gui/                                          # (planned) Tkinter interface
+    tests/                                             # pytest suite
+    ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
+    ├── test_auth_service.py                           # AuthService tests
+    ├── test_purchase_service.py                       # PurchaseService & soft-delete history tests
+    ├── test_admin_service.py                          # AdminService tests
+    ├── test_catalog_service.py                        # CatalogService tests
+    ├── test_money.py                                  # parse_money() precision & rounding tests
+    ├── test_book_repository.py                        # BookRepository SQL contract tests
+    ├── test_user_repository.py                        # UserRepository & real bcrypt tests
+    └── test_purchase_repository.py                    # PurchaseRepository SQL contract tests
 ```
 
 ## Configuration (.env)

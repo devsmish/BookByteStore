@@ -1,5 +1,19 @@
 # Changelog
 
+## v0.4.4 — Comprehensive pytest suite - 16/09/2026
+
+### Added
+- `pytest.ini` and `requirements-dev.txt` — testing framework configuration and development dependencies
+- `tests/conftest.py` — fake repository fixtures mimicking exact database rules (`deleted_at IS NULL`, stock validations)
+- Unit tests for all domain services (`AuthService`, `PurchaseService`, `AdminService`, `CatalogService`)
+- `test_money.py` — unit tests for `parse_money()` covering 2-decimal precision, `ROUND_HALF_UP` behavior, and invalid inputs
+- Repository unit tests using `pymysql` mocks (`BookRepository`, `UserRepository`, `PurchaseRepository`) asserting exact SQL query strings and parameter bindings
+- `test_user_repository.py` — password verification tests executing real `bcrypt` functions
+
+### Fixed
+- Verified purchase history durability against book soft deletion via explicit integration tests
+- Guaranteed SQL query contracts via mock assertions to prevent regressions such as accidentally omitting `deleted_at IS NULL` filters
+
 ## v0.4.3 — Soft delete for books - 12/09/2026
 
 ### Added
