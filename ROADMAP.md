@@ -61,6 +61,12 @@
 - [x] Real `bcrypt` hashing tests in `UserRepository`
 - [x] Purchase history preservation integration test post soft delete
 
+## v0.4.5 — Docker (MySQL + MongoDB)
+- [x] `../docker-compose.yml`: контейнеры `mysql` (книги/пользователи/покупки) и `mongodb` (лог поисковых запросов), данные на диске в `D:\DB` (не в Docker volume)
+- [x] Один `.env` управляет и приложением, и docker-compose (переменные `${VAR}` читаются из корневого `.env`) — не нужно дублировать пароли в двух местах
+- [x] `../docker`: создаёт read/edit MySQL-пользователей с теми же кредами, что в `.env`, при первом запуске
+- [x] `../docker` — инструкция по запуску, работе с `D:\DB`, пересозданию БД
+
 ## v0.5 — Tkinter GUI
 - `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
 - Screens: login/registration → book catalog → purchase → history
