@@ -1,0 +1,54 @@
+# Local dev environment: MySQL (books/users/purchases) + MongoDB
+# (search query logs). Data for both databases is stored not in Docker volumes,
+# but directly on the disk at D:\DB — this ensures it persists across
+# `docker compose down` and container recreation.
+#
+# The passwords and usernames below are read from the root .env file (Docker
+# Compose automatically picks up the .env file from the same directory) —
+# this is the same .env file used by the Python application.
+#
+# Before the first launch, create the following directories on your disk:
+#   D:\DB\bookstore\mysql
+#   D:\DB\bookstore\mongo
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bookstore_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DB_NAME}
+      # Passed to docker/mysql-init/01-create-users.sh so that the read/edit
+      # users are created with the credentials expected by the application.
+      BOOKSTORE_READ_USER: ${MYSQL_READ_USER}
+      BOOKSTORE_READ_PASSWORD: ${MYSQL_READ_PASSWORD}
+      BOOKSTORE_EDIT_USER: ${MYSQL_EDIT_USER}
+      BOOKSTORE_EDIT_PASSWORD: ${MYSQL_EDIT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - D:/DB/bookstore/mysql:/var/lib/mysql
+      - ./docker/mysql-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  mongo:
+    image: mongo:7
+    container_name: bookstore_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD}
+    ports:
+      - "27017:27017"
+    volumes:
+      - D:/DB/bookstore/mongo:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
