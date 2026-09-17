@@ -44,7 +44,9 @@ def main():
             )
             admin_service = AdminService(book_repository)
 
-            app = ConsoleApp(auth_service, catalog_service, purchase_service, admin_service)
+            app = ConsoleApp(
+                auth_service, catalog_service, purchase_service, admin_service
+            )
             app.run()
 
     except DatabaseConnectionError as e:
