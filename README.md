@@ -18,10 +18,16 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-## Running Tests
+### Database via Docker (recommended for local development)
+
 ```bash
-pytest
+docker compose up -d
 ```
+
+Starts MySQL (books/users/purchases) and MongoDB (search query logs) with data stored on disk at `D:\DB`. See `../docker` for details.
+The `.env.example` file already contains credentials matching this compose file.
+
+Without Docker: connect your own MySQL/MongoDB instances and fill in `.env` manually.
 
 ## Launch
 
@@ -94,6 +100,16 @@ Logging:
 ```
 Title,Author,Price,Stock
 ```
+
+## Running Tests
+```bash
+pip install -r requirements-dev.txt
+pytest
+pytest --cov=bookstore_modules --cov-report=term-missing  # с покрытием
+```
+
+Coverage: `services/` and `db/` repositories (63 tests: unit tests using fake repositories + repository 
+tests using `pymysql` connection mocks that verify the actual SQL).
 
 ## Roadmap
 

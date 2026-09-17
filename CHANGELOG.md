@@ -1,5 +1,15 @@
 # Changelog
 
+## v0.4.5 — Docker (MySQL + MongoDB)
+
+### Added
+- `../docker-compose.yml` — `mysql` and `mongodb` containers; data stored on disk at `D:\DB`
+- `../docker` — creates MySQL users with read/edit permissions based on `.env` variables
+- `../docker` — instructions for launching and working with local data storage
+- `.env.example`: `MYSQL_ROOT_PASSWORD` and `MONGO_ROOT_PASSWORD`
+
+---
+
 ## v0.4.4 — Comprehensive pytest suite - 16/09/2026
 
 ### Added
