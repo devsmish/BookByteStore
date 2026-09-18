@@ -1,8 +1,7 @@
 from app.config import is_admin
-from app.exceptions import InvalidInputError, UsernameTakenError, InvalidCredentialsError
-from app.models import User
+from app.exceptions import InvalidCredentialsError, InvalidInputError, UsernameTakenError
 from app.logging_config import get_logger
-
+from app.models import User
 
 logger = get_logger(__name__)
 

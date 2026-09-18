@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.exceptions import InvalidInputError, UsernameTakenError, InvalidCredentialsError
+from app.exceptions import InvalidCredentialsError, InvalidInputError, UsernameTakenError
 from app.services.auth import AuthService
 
 

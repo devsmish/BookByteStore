@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.4.6 — CI
+
+### Added
+- `.github/workflows/ci.yml` — GitHub Actions: linting (`ruff`), syntax check, and `pytest` with coverage on every `push`/`pull_request` to `main`
+- `../pyproject.toml` — `ruff` configuration (`line-length = 120`, rules `E`, `F`, `I`)
+- `requirements-dev.txt`: `ruff`, `pytest-cov`
+
+### Changed
+- Import sorting standardized across 11 files (`ruff --fix` autofix; import order only, no logic changes)
+
+---
+
 ## v0.4.5 — Docker (MySQL + MongoDB)
 
 ### Added
@@ -45,7 +57,7 @@
 
 ### Added
 - `logging_config.py` — `bookstore` logger with file rotation (`LOG_FILE`/`LOG_LEVEL` from `.env`) and duplication of `WARNING+` level logs to the console
-- `main.py` — top-level exception handling: unexpected exceptions are logged via `logger.exception()`, and a user-friendly message is displayed instead of a traceback
+- `app/main.py` — top-level exception handling: unexpected exceptions are logged via `logger.exception()`, and a user-friendly message is displayed instead of a traceback
 
 ### Changed
 - `database.py`, `services/search_logs.py`, `services/auth.py`, `services/purchase_service.py`, `services/admin_service.py` — events and errors (registration, login, purchases, top-ups, admin actions, connection failures) are now logged, replacing previous practices of either not recording them at all or outputting them via `print` statements within the business logic

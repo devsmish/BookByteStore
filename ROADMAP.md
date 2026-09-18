@@ -35,24 +35,24 @@
 - [x] All 5 locations handling monetary input (`console_app._register`, `admin_menu._read_book_fields`×2, `user_menu._top_up`, `admin_service.import_from_file`) have been switched from `float()` to `parse_money()`
 - [x] Also: invalid price/balance values in the import file are now silently skipped (similar to how lines of incorrect length were previously skipped) instead of causing the entire import to fail
 
-## v0.4.2 — switched from `print` to `logging` for errors/events (done)
+## v0.4.2 — switched from `print` to `logging` for errors/events
 - [x] `logging_config.py`: `bookstore` logger with file rotation (`LOG_FILE`, defaults to `bookstore.log`) + `WARNING+` output to console
 - [x] `database.py`: connection errors logged before being wrapped in `DatabaseConnectionError`
 - [x] `services/search_logs.py`: MongoDB errors logged as `WARNING`
 - [x] `services/auth.py`: registration/login (success and failure) — `INFO`/`WARNING`, passwords excluded from logs
 - [x] `services/purchase_service.py`: purchases and top-ups — `INFO`; failed purchases (including early stock checks, not just transaction failures) — `WARNING`
 - [x] `services/admin_service.py`: adding/editing/deleting books, file imports — `INFO`
-- [x] `main.py`: unhandled exceptions no longer crash the app with a raw traceback; logged via `logger.exception()`, user sees a clear message
+- [x] `app/main.py`: unhandled exceptions no longer crash the app with a raw traceback; logged via `logger.exception()`, user sees a clear message
 - [x] `*.log` added to `.gitignore`
 
-## v0.4.3 — Soft delete for books (done)
+## v0.4.3 — Soft delete for books
 - [x] `books.deleted_at DATETIME NULL` in schema + migration for existing databases (`ALTER TABLE ... ADD COLUMN IF NOT EXISTS`, MySQL ≥ 8.0.29 / MariaDB ≥ 10.0.2)
 - [x] `BookRepository.delete()` — `UPDATE ... SET deleted_at = NOW()` instead of `DELETE`
 - [x] All read queries (`get_all`, `search`, `get_by_id`, `decrease_stock`) filter by `deleted_at IS NULL` — deleted books are not visible in the catalog and cannot be purchased
 - [x] `get_deleted()` / `restore()` in the repository, `list_deleted_books()` / `restore_book()` in `AdminService`, "5. Restore deleted book" option in the admin panel
 - [x] Verified: purchase → soft delete → book hidden from catalog and unavailable for purchase → **purchase history remains intact** → restoration returns the book to the catalog
 
-## v0.4.4 — Comprehensive pytest suite (done)
+## v0.4.4 — Comprehensive pytest suite
 - [x] `pytest.ini` & `requirements-dev.txt` configured
 - [x] `tests/conftest.py`: fake repositories enforcing SQL semantics (`deleted_at IS NULL`, stock checks)
 - [x] Service layer unit tests (`AuthService`, `PurchaseService`, `AdminService`, `CatalogService`)
@@ -66,6 +66,12 @@
 - [x] Один `.env` управляет и приложением, и docker-compose (переменные `${VAR}` читаются из корневого `.env`) — не нужно дублировать пароли в двух местах
 - [x] `../docker`: создаёт read/edit MySQL-пользователей с теми же кредами, что в `.env`, при первом запуске
 - [x] `../docker` — инструкция по запуску, работе с `D:\DB`, пересозданию БД
+
+## v0.4.6 — CI (done)
+- [x] `.github/workflows/ci.yml`: on every `push`/`pull_request` to `main` — linting (`ruff`), syntax checks, and tests with coverage
+- [x] `../pyproject.toml`: explicitly pinned `ruff` rule set (`E`, `F`, `I`) — intentionally restricted to prevent CI from accidentally adopting stricter defaults from a future version of the tool
+- [x] Auto-fix for import sorting across the entire project (11 files; only `import` order changed, semantics remained the same)
+- [x] CI does not require a running database — the entire test suite operates using fake repositories and mocks; no actual MySQL/MongoDB is needed
 
 ## v0.5 — Tkinter GUI
 - `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic

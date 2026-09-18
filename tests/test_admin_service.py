@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pytest
 
-from app.exceptions import InvalidInputError, BookNotFoundError
+from app.exceptions import BookNotFoundError, InvalidInputError
 from app.services.admin_service import AdminService
 
 

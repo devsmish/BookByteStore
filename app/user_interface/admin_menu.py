@@ -1,6 +1,6 @@
 from app.exceptions import BookstoreError
-from app.user_interface.formatting import print_books
 from app.money import parse_money
+from app.user_interface.formatting import print_books
 
 
 class AdminMenu:
