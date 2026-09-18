@@ -1,9 +1,9 @@
 import os
 from collections import Counter
 
+from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
-from dotenv import load_dotenv
 
 from app.exceptions import SearchLogError
 from app.logging_config import get_logger

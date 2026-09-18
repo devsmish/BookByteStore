@@ -1,0 +1,8 @@
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+# Initially, a narrow set is configured: errors and obvious bugs (E, F) + import ordering (I).
+# More pedantic/stylistic sets (UP, FURB, PLW, DTZ, etc.) are not included.
+select = ["E", "F", "I"]

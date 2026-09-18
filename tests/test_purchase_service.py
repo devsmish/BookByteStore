@@ -3,10 +3,10 @@ from decimal import Decimal
 import pytest
 
 from app.exceptions import (
-    InvalidInputError,
     BookNotFoundError,
-    InsufficientStockError,
     InsufficientBalanceError,
+    InsufficientStockError,
+    InvalidInputError,
 )
 from app.models import User
 from app.services.purchase_service import PurchaseService

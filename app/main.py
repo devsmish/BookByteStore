@@ -1,21 +1,20 @@
 from app.database import (
-    get_read_connection,
-    get_edit_connection,
-    init_db,
-    db_name,
     DatabaseConnectionError,
+    db_name,
+    get_edit_connection,
+    get_read_connection,
+    init_db,
 )
 from app.db.books import BookRepository
-from app.db.users import UserRepository
 from app.db.purchases import PurchaseRepository
-from app.services.search_logs import SearchLogRepository
+from app.db.users import UserRepository
+from app.logging_config import get_logger, setup_logging
+from app.services.admin_service import AdminService
 from app.services.auth import AuthService
 from app.services.catalog_service import CatalogService
 from app.services.purchase_service import PurchaseService
-from app.services.admin_service import AdminService
+from app.services.search_logs import SearchLogRepository
 from app.user_interface.console_app import ConsoleApp
-from app.logging_config import setup_logging, get_logger
-
 
 logger = get_logger(__name__)
 
