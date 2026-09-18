@@ -32,7 +32,7 @@ Without Docker: connect your own MySQL/MongoDB instances and fill in `.env` manu
 ## Launch
 
 ```bash
-python -m main
+python -m app.main
 ```
 
 Upon the first launch, `init_db()` will create the database and tables (`books`, `users`, `purchases`) using the edit 
@@ -42,12 +42,12 @@ connection.
 
 ```
 BookByteStore/
-├── main.py                    # entry point, assembling repositories/services & global exception handling
 ├── pytest.ini                 # pytest suite configuration
     app/
     ├── database.py            # connection config (read/edit) from .env, connection error logging & DB initialization/migrations
     ├── config.py               # list of admins (ADMIN_USERNAMES) from .env
     ├── logging_config.py        # centralized logger configuration (file rotation + console handler)
+    ├── main.py                    # entry point, assembling repositories/services & global exception handling
     ├── money.py                 # parse_money() utility for Decimal conversion & ROUND_HALF_UP rounding
     ├── models.py                # domain models: Book (with deleted_at), User, Purchase (Decimal for monetary attributes)
     ├── exceptions.py             # domain exceptions
@@ -103,9 +103,10 @@ Title,Author,Price,Stock
 
 ## Running Tests
 ```bash
-pip install -r requirements-dev.txt
+pip install -r requirements.txt
 pytest
-pytest --cov=bookstore_modules --cov-report=term-missing  # с покрытием
+pytest --cov=app --cov-report=term-missing  # coated
+ruff check app tests                        # linter
 ```
 
 Coverage: `services/` and `db/` repositories (63 tests: unit tests using fake repositories + repository 
