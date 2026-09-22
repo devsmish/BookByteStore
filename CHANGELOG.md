@@ -1,6 +1,19 @@
 # Changelog
 
-## v0.4.6 — CI
+## v0.5.0 — GUI skeleton - 22/09/2026
+
+### Added
+- `bootstrap.py` — `build_services()`: unified repository/service assembly for CLI and GUI
+- `gui/app.py` — `BookstoreApp`: root Tkinter window with screen switching
+- `gui/screens/placeholder.py` — temporary confirmation screen
+- `gui_main.py` — GUI entry point (`python -m bookstore_modules.gui_main`)
+
+### Changed
+- `main.py` updated to use `bootstrap.build_services()` instead of assembling repositories/services directly
+
+---
+
+## v0.4.6 — CI - 18/09/2026
 
 ### Added
 - `.github/workflows/ci.yml` — GitHub Actions: linting (`ruff`), syntax check, and `pytest` with coverage on every `push`/`pull_request` to `main`
@@ -12,7 +25,7 @@
 
 ---
 
-## v0.4.5 — Docker (MySQL + MongoDB)
+## v0.4.5 — Docker (MySQL + MongoDB) - 17/09/2026
 
 ### Added
 - `../docker-compose.yml` — `mysql` and `mongodb` containers; data stored on disk at `D:\DB`

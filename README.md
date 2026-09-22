@@ -38,6 +38,17 @@ python -m app.main
 Upon the first launch, `init_db()` will create the database and tables (`books`, `users`, `purchases`) using the edit 
 connection.
 
+### GUI (under development)
+
+```bash
+python -m bookstore_modules.gui_main
+```
+
+On Linux, you may need to install the system package for Tkinter bindings separately
+from `pip` (e.g., `sudo apt install python3-tk` on Debian/Ubuntu); it is not
+included in `requirements.txt` because `tkinter` is not installed via `pip`.
+On Windows/macOS, it is usually included in the standard Python installation.
+
 ## Structure
 
 ```
@@ -51,6 +62,8 @@ BookByteStore/
     ├── money.py                 # parse_money() utility for Decimal conversion & ROUND_HALF_UP rounding
     ├── models.py                # domain models: Book (with deleted_at), User, Purchase (Decimal for monetary attributes)
     ├── exceptions.py             # domain exceptions
+    ├── bootstrap.py               # Services: building repositories/services for CLI and GUI
+    ├── gui_main.py                 # GUI entry point
     ├── db/                          # repositories — MySQL operations
     │   ├── books.py                  # BookRepository (catalog queries with soft-delete filtering, soft-delete & restore operations)
     │   ├── users.py                   # UserRepository
@@ -66,7 +79,9 @@ BookByteStore/
     │   ├── user_menu.py                           # UserMenu
     │   ├── admin_menu.py                           # AdminMenu (includes option to view & restore deleted books)
     │   └── formatting.py                            # shared output functions
-    └── gui/                                          # (planned) Tkinter interface
+    ├── gui/                                          # Tkinter interface (under development)
+│   ├── app.py                                         # BookstoreApp: root window, screen switching
+│   └── screens/                                        # screens (placeholder.py is currently the only one)
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
     ├── test_auth_service.py                           # AuthService tests
