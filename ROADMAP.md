@@ -73,10 +73,11 @@
 - [x] Auto-fix for import sorting across the entire project (11 files; only `import` order changed, semantics remained the same)
 - [x] CI does not require a running database — the entire test suite operates using fake repositories and mocks; no actual MySQL/MongoDB is needed
 
-## v0.5 — Tkinter GUI
-- `app/gui/` layer (already created as an empty package) — windows built on top of the existing `services` and `db` layers, without duplicating business logic
-- Screens: login/registration → book catalog → purchase → history
-- CLI (`user_interface`) remains as an alternative startup mode (`--cli`))
+## v0.5.0 — GUI: Skeleton
+- Entry point `../app/gui_main.py` (separate from `main.py` to avoid affecting the working CLI) — uses the same DB connection and service/repository setup as `main.py`. Move the shared setup logic into a common function (e.g., `app/bootstrap.py: build_services()`) instead of duplicating code between `main.py` and `gui_main.py`.
+- `gui/app.py`: Root `Tk` window, screen-switching controller (single root + `ttk.Frame` widgets raised via `tkraise()` rather than multiple `Toplevel` windows).
+- Placeholder screen to confirm the window opens and services are connected.
+- Decision: Use `ttk` widgets (more modern look) instead of standard `tk` widgets — finalize this choice now to avoid styling rework later.
 
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
