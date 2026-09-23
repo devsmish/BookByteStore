@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.5.1 — Hotfix: MySQL syntax & DB connection — 23/09/2026
+
+### Fixed
+- **Database Initialization**: Fixed SQL syntax error on older MySQL versions (< 8.0.19) by replacing `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` with standard `ALTER TABLE` and catching MySQL error `1060` (`ER_DUP_FIELDNAME`).
+- **Database Connection**: Resolved `1049 (Unknown database)` error on startup by passing `database=MYSQL_DB_NAME` in connection parameters and removing manual `USE` queries from `gui_main.py`.
+- **Import Sorting**: Fixed import order in `app/database.py` according to `ruff` linting rules (`I001`).
+
+---
+
 ## v0.5.0 — GUI skeleton - 22/09/2026
 
 ### Added
