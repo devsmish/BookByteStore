@@ -1,8 +1,6 @@
 import os
-
 import pymysql
 from dotenv import load_dotenv
-
 from app.logging_config import get_logger
 
 load_dotenv()
@@ -11,20 +9,18 @@ logger = get_logger(__name__)
 
 db_name = os.getenv("MYSQL_DB_NAME")
 
-# read — SELECT only (viewing books, login)
 config_read = {
-    'host': os.getenv("MYSQL_READ_HOST"),
-    'port': int(os.getenv("MYSQL_READ_PORT", 3306)),
-    'user': os.getenv("MYSQL_READ_USER"),
-    'password': os.getenv("MYSQL_READ_PASSWORD"),
+    "host": os.getenv("MYSQL_READ_HOST"),
+    "port": int(os.getenv("MYSQL_READ_PORT", 3306)),
+    "user": os.getenv("MYSQL_READ_USER"),
+    "password": os.getenv("MYSQL_READ_PASSWORD"),
 }
 
-# edit — INSERT/UPDATE (registration, purchase, book downloading, database creation)
 config_edit = {
-    'host': os.getenv("MYSQL_EDIT_HOST"),
-    'port': int(os.getenv("MYSQL_EDIT_PORT", 3306)),
-    'user': os.getenv("MYSQL_EDIT_USER"),
-    'password': os.getenv("MYSQL_EDIT_PASSWORD"),
+    "host": os.getenv("MYSQL_EDIT_HOST"),
+    "port": int(os.getenv("MYSQL_EDIT_PORT", 3306)),
+    "user": os.getenv("MYSQL_EDIT_USER"),
+    "password": os.getenv("MYSQL_EDIT_PASSWORD"),
 }
 
 
@@ -32,36 +28,37 @@ class DatabaseConnectionError(Exception):
     """A clear error message instead of a raw traceback from PyMySQL."""
 
 
-def _connect(config, role):
+def _connect(config, role, database=None):
     missing = [k for k in ("host", "user", "password") if not config.get(k)]
     if missing:
         env_vars = ", ".join(f"MYSQL_{role.upper()}_{m.upper()}" for m in missing)
         logger.error("Missing env vars for %s connection: %s", role, env_vars)
         raise DatabaseConnectionError(
-            f"Environment variables for the {role} connection are not set: "
-            f"{env_vars}. "
-            f"Check the .env file!!!"
+            f"Environment variables for the {role} connection are not set: " f"{env_vars}. Check the .env file!!!"
         )
+
+    conn_kwargs = config.copy()
+    if database:
+        conn_kwargs["database"] = database
+
     try:
-        return pymysql.connect(**config)
+        return pymysql.connect(**conn_kwargs)
     except pymysql.err.OperationalError as e:
-        logger.error("Failed to connect to MySQL (%s, host=%s): %s", role, config['host'], e)
-        raise DatabaseConnectionError(
-            f"Failed to connect to MySQL ({role}, host={config['host']}): {e}"
-        ) from e
+        logger.error("Failed to connect to MySQL (%s, host=%s): %s", role, config["host"], e)
+        raise DatabaseConnectionError(f"Failed to connect to MySQL ({role}, host={config['host']}): {e}") from e
 
 
-def get_read_connection():
-    return _connect(config_read, "read")
+def get_read_connection(select_db: bool = True):
+    return _connect(config_read, "read", database=db_name if select_db else None)
 
 
-def get_edit_connection():
-    return _connect(config_edit, "edit")
+def get_edit_connection(select_db: bool = True):
+    return _connect(config_edit, "edit", database=db_name if select_db else None)
 
 
 def init_db():
     """Creates the database and tables. Requires an edit user with the CREATE privilege."""
-    with get_edit_connection() as connection:
+    with get_edit_connection(select_db=False) as connection:
         with connection.cursor() as cursor:
             cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
             cursor.execute(f"USE {db_name}")
@@ -77,12 +74,14 @@ def init_db():
                 )
             """)
 
-            # Migration for databases created before the introduction of soft deletes.
-            # Requires MySQL >= 8.0.29 / MariaDB >= 10.0.2
-            cursor.execute("""
-                ALTER TABLE books
-                ADD COLUMN IF NOT EXISTS deleted_at DATETIME NULL DEFAULT NULL
-            """)
+            try:
+                cursor.execute("""
+                    ALTER TABLE books
+                    ADD COLUMN deleted_at DATETIME NULL DEFAULT NULL
+                """)
+            except pymysql.err.OperationalError as e:
+                if e.args[0] != 1060:  # 1060: Duplicate column name
+                    raise
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS users (

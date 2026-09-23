@@ -1,7 +1,6 @@
 from app.bootstrap import build_services
 from app.database import (
     DatabaseConnectionError,
-    db_name,
     get_edit_connection,
     get_read_connection,
     init_db,
@@ -19,11 +18,6 @@ def main():
         init_db()
 
         with get_read_connection() as read_connection, get_edit_connection() as edit_connection:
-            with read_connection.cursor() as cursor:
-                cursor.execute(f"USE {db_name}")
-            with edit_connection.cursor() as cursor:
-                cursor.execute(f"USE {db_name}")
-
             services = build_services(read_connection, edit_connection)
 
             from app.gui.app import BookstoreApp
