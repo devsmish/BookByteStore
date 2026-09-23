@@ -79,6 +79,10 @@
 - Placeholder screen to confirm the window opens and services are connected.
 - Decision: Use `ttk` widgets (more modern look) instead of standard `tk` widgets — finalize this choice now to avoid styling rework later.
 
+## v0.5.1 — Hotfix (MySQL Compatibility & Connections)
+- [x] Catch MySQL error `1060` during `ALTER TABLE` for backwards compatibility with MySQL < 8.0.19 / MariaDB.
+- [x] Pass `database` name explicitly in PyMySQL connection dictionary to eliminate startup `1049` errors and remove redundant `USE` queries.
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

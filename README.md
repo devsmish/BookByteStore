@@ -6,7 +6,7 @@ interface during the initial development phase; a Tkinter-based GUI is planned f
 ## Prerequisites & Database Requirements
 
 - Python 3.10+
-- **MySQL ≥ 8.0.29** or **MariaDB ≥ 10.0.2** (required for `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` schema migrations)
+- **MySQL 5.7+** or **MariaDB** (compatible with older syntax via safe migration checks)
 - MongoDB (for search query logging)
 
 ## Installation
