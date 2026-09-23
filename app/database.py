@@ -1,6 +1,8 @@
 import os
+
 import pymysql
 from dotenv import load_dotenv
+
 from app.logging_config import get_logger
 
 load_dotenv()
