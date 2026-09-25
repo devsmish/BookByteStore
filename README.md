@@ -41,7 +41,7 @@ connection.
 ### GUI (under development)
 
 ```bash
-python -m bookstore_modules.gui_main
+python -m app.gui_main
 ```
 
 On Linux, you may need to install the system package for Tkinter bindings separately
@@ -79,9 +79,9 @@ BookByteStore/
     │   ├── user_menu.py                           # UserMenu
     │   ├── admin_menu.py                           # AdminMenu (includes option to view & restore deleted books)
     │   └── formatting.py                            # shared output functions
-    ├── gui/                                          # Tkinter interface (under development)
-│   ├── app.py                                         # BookstoreApp: root window, screen switching
-│   └── screens/                                        # screens (placeholder.py is currently the only one)
+    ├─  gui/                                          # Tkinter interface (under development)
+│   │   ├── app.py                                     # BookstoreApp: root window, screen switching
+│   │     └── screens/                                    # login.py, register.py, home.py
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
     ├── test_auth_service.py                           # AuthService tests

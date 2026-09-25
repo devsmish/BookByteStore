@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.2 — Auth screens — 25/09/2026
+
+### Added
+- `gui/screens/login.py`, `register.py`, `home.py`
+- `BookstoreApp` now starts on `LoginScreen`
+
+### Removed
+- `gui/screens/placeholder.py` — served its purpose in v1.0; replaced by actual screens
+
+---
+
 ## v0.5.1 — Hotfix: MySQL syntax & DB connection — 23/09/2026
 
 ### Fixed
