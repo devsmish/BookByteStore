@@ -83,6 +83,14 @@
 - [x] Catch MySQL error `1060` during `ALTER TABLE` for backwards compatibility with MySQL < 8.0.19 / MariaDB.
 - [x] Pass `database` name explicitly in PyMySQL connection dictionary to eliminate startup `1049` errors and remove redundant `USE` queries.
 
+## v0.5.2 — GUI: Authentication Screens (Login, Register, Home)
+- [x] Removed temporary `app/gui/screens/placeholder.py` screen
+- [x] Implemented `LoginScreen` (`app/gui/screens/login.py`) with error feedback and navigation to registration
+- [x] Implemented `RegisterScreen` (`app/gui/screens/register.py`) with empty input validation, `Decimal` balance parsing (`parse_money()`), and auto-redirection on success
+- [x] Added `HomeScreen` (`app/gui/screens/home.py`) as a post-login landing view with user info and Logout functionality
+- [x] Scoped `<Return>` form submission handlers directly to entry widgets (`entry.bind("<Return>", ...)`) to prevent memory leaks across frame view transitions
+- [x] Ensured explicit frame destruction (`winfo_exists() == False`) upon screen navigation
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)
