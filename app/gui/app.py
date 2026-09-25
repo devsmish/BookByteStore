@@ -27,8 +27,8 @@ class BookstoreApp(tk.Tk):
         self._container = container
         self._current_screen = None
 
-        from app.gui.screens.placeholder import PlaceholderScreen
-        self.show_screen(PlaceholderScreen)
+        from app.gui.screens.login import LoginScreen
+        self.show_screen(LoginScreen)
 
     def show_screen(self, screen_class, **kwargs):
         """Creates a screen of the specified class and makes it visible, destroying the previous one."""
