@@ -79,9 +79,13 @@ BookByteStore/
     │   ├── user_menu.py                           # UserMenu
     │   ├── admin_menu.py                           # AdminMenu (includes option to view & restore deleted books)
     │   └── formatting.py                            # shared output functions
-    ├─  gui/                                          # Tkinter interface (under development)
-│   │   ├── app.py                                     # BookstoreApp: root window, screen switching
-│   │     └── screens/                                    # login.py, register.py, home.py
+    ├─  gui/                                     # Tkinter interface
+│   │   ├── app.py                               # BookstoreApp: root window, screen switching controller
+│   │   └── screens/                             # Application screens
+│   │       ├── login.py                         # LoginScreen
+│   │       ├── register.py                      # RegisterScreen
+│   │       ├── home.py                          # HomeScreen
+│   │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label)
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
     ├── test_auth_service.py                           # AuthService tests

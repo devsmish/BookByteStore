@@ -91,6 +91,14 @@
 - [x] Scoped `<Return>` form submission handlers directly to entry widgets (`entry.bind("<Return>", ...)`) to prevent memory leaks across frame view transitions
 - [x] Ensured explicit frame destruction (`winfo_exists() == False`) upon screen navigation
 
+## v0.5.3 — GUI: Catalog & Book Search
+- [x] `app/gui/screens/catalog.py`: implemented `CatalogScreen` using `ttk.Treeview` displaying Title, Author, Price, and Stock
+- [x] Integrated search bar with query filtering, "Show All" reset button, and non-empty query input validation
+- [x] Non-blocking warning integration: if search query logging (MongoDB) fails, display a non-disruptive yellow warning label without losing or blocking search results
+- [x] `HomeScreen`: added "Browse catalog" navigation button routing to `CatalogScreen`
+- [x] Added "Back" button navigating to `HomeScreen` and ensuring explicit frame destruction (`winfo_exists() == False`)
+- [x] Executed headless test scenario (Xvfb): catalog initial load → valid query search → empty match search → reset filters → search log failure resilience → clean frame destruction on back navigation
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

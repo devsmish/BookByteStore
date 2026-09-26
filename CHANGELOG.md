@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.5.3 — Catalog and search — 26/09/2026
+
+### Added
+- `gui/screens/catalog.py` — `Treeview` with book list, search, "Show all"
+
+### Changed
+- `HomeScreen`: "Browse catalog" button
+
 ## v0.5.2 — Auth screens — 25/09/2026
 
 ### Added
