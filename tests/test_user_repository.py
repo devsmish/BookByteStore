@@ -33,7 +33,7 @@ def test_create_hashes_password_not_plaintext():
 
 def test_authenticate_correct_password():
     hashed = bcrypt.hashpw("secret123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    read_conn, _ = make_connection(fetchone_return=(1, "alice", hashed, 100))
+    read_conn, _ = make_connection(fetchone_return=(1, "alice", hashed, 100, 0))
     edit_conn, _ = make_connection()
     repo = UserRepository(read_conn, edit_conn)
 
@@ -45,7 +45,7 @@ def test_authenticate_correct_password():
 
 def test_authenticate_wrong_password():
     hashed = bcrypt.hashpw("secret123".encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
-    read_conn, _ = make_connection(fetchone_return=(1, "alice", hashed, 100))
+    read_conn, _ = make_connection(fetchone_return=(1, "alice", hashed, 100, 0))
     edit_conn, _ = make_connection()
     repo = UserRepository(read_conn, edit_conn)
 
