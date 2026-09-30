@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.5.4 — Purchase — 30/09/2026
+
+### Added
+- `CatalogScreen`: book selection + quantity + "Buy selected" button
+- Display and update of user balance in the catalog screen header
+
+### Design note
+The purchase result is displayed via an inline label rather than a `messagebox`; modal
+dialogs hang during headless tests (without an actual click) and are inconsistent with
+the rest of the UI (login, registration, and search errors were already displayed using labels).
+
+---
+
 ## v0.5.3 — Catalog and search — 26/09/2026
 
 ### Added
