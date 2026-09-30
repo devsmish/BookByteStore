@@ -66,7 +66,7 @@ BookByteStore/
     ├── gui_main.py                 # GUI entry point
     ├── db/                          # repositories — MySQL operations
     │   ├── books.py                  # BookRepository (catalog queries with soft-delete filtering, soft-delete & restore operations)
-    │   ├── users.py                   # UserRepository
+    │   ├── users.py                   # UserRepository (authenticated user lookup with 5-column tuple unpacking)
     │   └── purchases.py                # PurchaseRepository (JOIN queries preserved for soft-deleted books)
     ├── services/                        # business logic (no input()/print(), error & event logging)
     │   ├── auth.py                       # AuthService (registration, login)
@@ -85,7 +85,7 @@ BookByteStore/
 │   │       ├── login.py                         # LoginScreen
 │   │       ├── register.py                      # RegisterScreen
 │   │       ├── home.py                          # HomeScreen
-│   │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label)
+│   │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label, inline book purchasing & dynamic balance/stock updates)
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
     ├── test_auth_service.py                           # AuthService tests

@@ -99,6 +99,13 @@
 - [x] Added "Back" button navigating to `HomeScreen` and ensuring explicit frame destruction (`winfo_exists() == False`)
 - [x] Executed headless test scenario (Xvfb): catalog initial load → valid query search → empty match search → reset filters → search log failure resilience → clean frame destruction on back navigation
 
+## v0.5.4 — Purchase
+- [x] `CatalogScreen` extended: `Treeview` row selection + quantity field + "Buy selected" button
+- [x] Purchase result displayed as an inline label rather than a `messagebox`: a modal `messagebox` creates its own event loop and causes the application to hang during headless tests unless "OK" is physically clicked; the inline label approach is consistent with how login/registration errors and search warnings are already displayed
+- [x] User balance displayed in the screen header and updated immediately after purchase (`user.balance` is mutated in place—the same `User` object is passed between screens by reference, so `HomeScreen` will also reflect the updated balance upon reopening without an additional database query)
+- [x] Book list refreshed (`_show_all()`) after purchase to ensure the displayed stock level is up to date
+- [x] Headless scenario actually executed: purchase without selecting a row → error; invalid quantity (text, zero) → error; insufficient stock → error + confirmed that `rollback()` is called and the balance remains unchanged; successful purchase → confirmed that `commit()` is called exactly once, balance/stock/`Treeview`/result label all updated consistently, and the purchase was actually recorded in `PurchaseRepository`.
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

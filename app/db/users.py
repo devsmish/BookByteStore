@@ -33,7 +33,7 @@ class UserRepository:
         if not row:
             return None
 
-        user_id, db_username, stored_password, balance = row
+        user_id, db_username, stored_password, balance, _ = row
         if not bcrypt.checkpw(password.encode("utf-8"), stored_password.encode("utf-8")):
             return None
 
