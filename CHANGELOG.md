@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.5 — Purchase history and balance top-up — 02/10/2026
+
+### Added
+- `gui/screens/history.py` — purchase history screen
+- `gui/screens/top_up_dialog.py` — balance top-up modal dialog
+
+### Changed
+- `HomeScreen`: "Purchase history" and "Top up balance" buttons; `balance_label` is now a screen attribute
+
+---
+
 ## v0.5.4 — Purchase — 30/09/2026
 
 ### Added
