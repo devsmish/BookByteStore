@@ -85,6 +85,8 @@ BookByteStore/
 │   │       ├── login.py                         # LoginScreen
 │   │       ├── register.py                      # RegisterScreen
 │   │       ├── home.py                          # HomeScreen
+    │       ├── history.py                       # HistoryScreen
+    │       ├── top_up_dialog.py                 # TopUpDialog
 │   │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label, inline book purchasing & dynamic balance/stock updates)
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics

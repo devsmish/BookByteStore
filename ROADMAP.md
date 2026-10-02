@@ -106,6 +106,12 @@
 - [x] Book list refreshed (`_show_all()`) after purchase to ensure the displayed stock level is up to date
 - [x] Headless scenario actually executed: purchase without selecting a row → error; invalid quantity (text, zero) → error; insufficient stock → error + confirmed that `rollback()` is called and the balance remains unchanged; successful purchase → confirmed that `commit()` is called exactly once, balance/stock/`Treeview`/result label all updated consistently, and the purchase was actually recorded in `PurchaseRepository`.
 
+## v0.5.5 — Purchase history and balance
+- [x] `gui/screens/history.py`: `Treeview` displaying the purchase list (`PurchaseService.history`); shows "No purchases yet." instead of an empty table if the history is empty.
+- [x] `gui/screens/top_up_dialog.py`: Modal `Toplevel` (`grab_set()` blocks the parent window while the dialog is open); the result is passed via `on_success(new_balance)`—the calling screen decides how to update its balance display, rather than the dialog directly accessing another widget.
+- [x] `HomeScreen`: "Purchase history" and "Top up balance" buttons; `balance_label` moved to an attribute so the dialog can update it via a callback.
+- [x] Headless scenario actually executed: empty history → "No purchases yet."; history with two purchases → rows and columns correct; History↔Home navigation; invalid amount in dialog → error, dialog does not close; negative amount (business validation handled in `PurchaseService.top_up`, not during parsing) → error, balance remains unchanged; successful top-up → dialog closes, balance updated consistently across repository, `User` object, and `HomeScreen` label; actual flow via the `_open_top_up()` button verified separately, not just direct dialog invocation.
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)
