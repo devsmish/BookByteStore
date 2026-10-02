@@ -14,17 +14,35 @@ class HomeScreen(ttk.Frame):
 
         role = "admin" if user.is_admin else "user"
         ttk.Label(self, text=f"Role: {role}").pack()
-        ttk.Label(self, text=f"Balance: ${user.balance}").pack(pady=(4, 24))
+        self.balance_label = ttk.Label(self, text=f"Balance: ${user.balance}")
+        self.balance_label.pack(pady=(4, 24))
 
-        ttk.Label(self, text="Purchases and admin panel are coming in the next steps.").pack(pady=(0, 24))
+        ttk.Label(self, text="Admin panel is coming in the next steps.").pack(pady=(0, 24))
 
         ttk.Button(self, text="Browse catalog", command=self._go_catalog).pack(pady=(0, 8))
+        ttk.Button(self, text="Purchase history", command=self._go_history).pack(pady=(0, 8))
+        ttk.Button(self, text="Top up balance", command=self._open_top_up).pack(pady=(0, 8))
         ttk.Button(self, text="Log out", command=self._logout).pack()
 
     def _go_catalog(self):
         from app.gui.screens.catalog import CatalogScreen
+
         self.app.show_screen(CatalogScreen, user=self.user)
+
+    def _go_history(self):
+        from gui.screens.history import HistoryScreen
+
+        self.app.show_screen(HistoryScreen, user=self.user)
+
+    def _open_top_up(self):
+        from app.gui.screens.top_up_dialog import TopUpDialog
+
+        TopUpDialog(self, self.app, self.user, on_success=self._on_balance_updated)
+
+    def _on_balance_updated(self, new_balance):
+        self.balance_label.config(text=f"Balance: ${new_balance}")
 
     def _logout(self):
         from app.gui.screens.login import LoginScreen
+
         self.app.show_screen(LoginScreen)
