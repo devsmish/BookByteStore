@@ -112,6 +112,13 @@
 - [x] `HomeScreen`: "Purchase history" and "Top up balance" buttons; `balance_label` moved to an attribute so the dialog can update it via a callback.
 - [x] Headless scenario actually executed: empty history → "No purchases yet."; history with two purchases → rows and columns correct; History↔Home navigation; invalid amount in dialog → error, dialog does not close; negative amount (business validation handled in `PurchaseService.top_up`, not during parsing) → error, balance remains unchanged; successful top-up → dialog closes, balance updated consistently across repository, `User` object, and `HomeScreen` label; actual flow via the `_open_top_up()` button verified separately, not just direct dialog invocation.
 
+## v0.5.6 — Admin Panel
+- [x] `gui/screens/admin.py`: hub with a book list; buttons for add/edit/delete/import/deleted books
+- [x] `gui/screens/book_form_dialog.py`: single modal for adding and editing (`book=None` → add, `book=<Book>` → fields pre-filled) — avoid duplicating the form
+- [x] `gui/screens/deleted_books.py`: list of soft-deleted books + restore functionality
+- [x] `HomeScreen`: "Admin panel" button visible only if `user.is_admin` — same logic as in the console-based `UserMenu`
+- [x] Import from file — `filedialog.askopenfilename()`; cancelling the selection (empty string) does not trigger the import
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

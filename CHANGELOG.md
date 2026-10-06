@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.5.6 — Admin panel — 06/10/2026
+
+### Added
+- `gui/screens/admin.py` — admin panel hub
+- `gui/screens/book_form_dialog.py` — unified modal for adding/editing books
+- `gui/screens/deleted_books.py` — screen for soft-deleted books with restore functionality
+
+### Changed
+- `HomeScreen`: "Admin panel" button is visible only if `user.is_admin` is true
+
+---
+
 ## v0.5.5 — Purchase history and balance top-up — 02/10/2026
 
 ### Added
