@@ -1,6 +1,8 @@
 from tkinter import filedialog, ttk
 
 from app.exceptions import BookstoreError
+from app.gui.dialogs import confirm
+from app.gui.style import PAD
 
 
 class AdminScreen(ttk.Frame):
@@ -10,12 +12,12 @@ class AdminScreen(ttk.Frame):
         self.user = user
 
         top_bar = ttk.Frame(self)
-        top_bar.pack(fill="x", padx=12, pady=(12, 4))
+        top_bar.pack(fill="x", padx=PAD, pady=(12, 4))
         ttk.Label(top_bar, text="Admin Panel", font=("", 16, "bold")).pack(side="left")
         ttk.Button(top_bar, text="Back", command=self._go_home).pack(side="right")
 
         action_bar = ttk.Frame(self)
-        action_bar.pack(fill="x", padx=12, pady=(0, 8))
+        action_bar.pack(fill="x", padx=PAD, pady=(0, 8))
         ttk.Button(action_bar, text="Add book", command=self._open_add_dialog).pack(side="left")
         ttk.Button(action_bar, text="Edit selected", command=self._open_edit_dialog).pack(side="left", padx=(6, 0))
         ttk.Button(action_bar, text="Delete selected", command=self._delete_selected).pack(side="left", padx=(6, 0))
@@ -25,7 +27,7 @@ class AdminScreen(ttk.Frame):
         ttk.Button(action_bar, text="View deleted books", command=self._go_deleted).pack(side="left", padx=(6, 0))
 
         self.result_label = ttk.Label(self, text="")
-        self.result_label.pack(fill="x", padx=12)
+        self.result_label.pack(fill="x", padx=PAD)
 
         columns = ("title", "author", "price", "stock")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
@@ -37,7 +39,7 @@ class AdminScreen(ttk.Frame):
         ):
             self.tree.heading(col, text=heading)
             self.tree.column(col, width=width, anchor=anchor)
-        self.tree.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+        self.tree.pack(fill="both", expand=True, padx=PAD, pady=(0, 12))
 
         self.books_by_row = {}
         self._refresh()
@@ -58,7 +60,7 @@ class AdminScreen(ttk.Frame):
         return self.books_by_row.get(selection[0])
 
     def _open_add_dialog(self):
-        from gui.screens.book_form_dialog import BookFormDialog
+        from app.gui.screens.book_form_dialog import BookFormDialog
         BookFormDialog(self, self.app, on_success=self._refresh)
 
     def _open_edit_dialog(self):
@@ -74,6 +76,10 @@ class AdminScreen(ttk.Frame):
         if not book:
             self.result_label.config(text="Select a book first.", foreground="red")
             return
+
+        if not confirm(self, "Delete book", f"Delete '{book.title}'? This can be undone from 'View deleted books'."):
+            return
+
         try:
             self.app.services.admin.delete_book(book.id)
         except BookstoreError as e:

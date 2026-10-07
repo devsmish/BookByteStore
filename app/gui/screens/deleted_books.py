@@ -1,6 +1,7 @@
 from tkinter import ttk
 
 from app.exceptions import BookstoreError
+from app.gui.style import PAD
 
 
 class DeletedBooksScreen(ttk.Frame):
@@ -10,16 +11,16 @@ class DeletedBooksScreen(ttk.Frame):
         self.user = user
 
         top_bar = ttk.Frame(self)
-        top_bar.pack(fill="x", padx=12, pady=(12, 4))
+        top_bar.pack(fill="x", padx=PAD, pady=(12, 4))
         ttk.Label(top_bar, text="Deleted Books", font=("", 16, "bold")).pack(side="left")
         ttk.Button(top_bar, text="Back", command=self._go_admin).pack(side="right")
 
         ttk.Button(self, text="Restore selected", command=self._restore_selected).pack(
-            anchor="w", padx=12, pady=(0, 4)
+            anchor="w", padx=PAD, pady=(0, 4)
         )
 
         self.result_label = ttk.Label(self, text="")
-        self.result_label.pack(fill="x", padx=12)
+        self.result_label.pack(fill="x", padx=PAD)
 
         columns = ("title", "author", "deleted_at")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
@@ -30,7 +31,7 @@ class DeletedBooksScreen(ttk.Frame):
         ):
             self.tree.heading(col, text=heading)
             self.tree.column(col, width=width, anchor=anchor)
-        self.tree.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+        self.tree.pack(fill="both", expand=True, padx=PAD, pady=(0, 12))
 
         self.books_by_row = {}
         self._refresh()
@@ -64,5 +65,5 @@ class DeletedBooksScreen(ttk.Frame):
         self.result_label.config(text=f"Restored '{book.title}'.", foreground="green")
 
     def _go_admin(self):
-        from gui.screens.admin import AdminScreen
+        from app.gui.screens.admin import AdminScreen
         self.app.show_screen(AdminScreen, user=self.user)
