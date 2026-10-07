@@ -1,5 +1,7 @@
 from tkinter import ttk
 
+from app.gui.style import PAD
+
 
 class HistoryScreen(ttk.Frame):
     def __init__(self, parent, app, user, **kwargs):
@@ -8,12 +10,12 @@ class HistoryScreen(ttk.Frame):
         self.user = user
 
         top_bar = ttk.Frame(self)
-        top_bar.pack(fill="x", padx=12, pady=(12, 4))
+        top_bar.pack(fill="x", padx=PAD, pady=(12, 4))
         ttk.Label(top_bar, text="Purchase History", font=("", 16, "bold")).pack(side="left")
         ttk.Button(top_bar, text="Back", command=self._go_home).pack(side="right")
 
         self.info_label = ttk.Label(self, text="")
-        self.info_label.pack(fill="x", padx=12, anchor="w")
+        self.info_label.pack(fill="x", padx=PAD, anchor="w")
 
         columns = ("date", "title", "author", "quantity", "price", "total")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
@@ -27,7 +29,7 @@ class HistoryScreen(ttk.Frame):
         ):
             self.tree.heading(col, text=heading)
             self.tree.column(col, width=width, anchor=anchor)
-        self.tree.pack(fill="both", expand=True, padx=12, pady=(0, 12))
+        self.tree.pack(fill="both", expand=True, padx=PAD, pady=(0, 12))
 
         self._load_history()
 
