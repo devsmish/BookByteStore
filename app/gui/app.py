@@ -20,6 +20,10 @@ class BookstoreApp(tk.Tk):
         self.geometry("800x600")
         self.minsize(600, 400)
 
+        from app.gui.style import apply_style
+
+        apply_style(self)
+
         container = ttk.Frame(self)
         container.pack(fill="both", expand=True)
         container.rowconfigure(0, weight=1)
@@ -28,6 +32,7 @@ class BookstoreApp(tk.Tk):
         self._current_screen = None
 
         from app.gui.screens.login import LoginScreen
+
         self.show_screen(LoginScreen)
 
     def show_screen(self, screen_class, **kwargs):

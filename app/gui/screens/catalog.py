@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 
 from app.exceptions import BookstoreError
+from app.gui.style import PAD
 
 
 class CatalogScreen(ttk.Frame):
@@ -13,14 +14,14 @@ class CatalogScreen(ttk.Frame):
         self.user = user
 
         top_bar = ttk.Frame(self)
-        top_bar.pack(fill="x", padx=12, pady=(12, 4))
+        top_bar.pack(fill="x", padx=PAD, pady=(12, 4))
         ttk.Label(top_bar, text="Catalog", font=("", 16, "bold")).pack(side="left")
         ttk.Button(top_bar, text="Back", command=self._go_home).pack(side="right")
         self.balance_label = ttk.Label(top_bar, text=f"Balance: ${user.balance}")
         self.balance_label.pack(side="right", padx=(0, 12))
 
         search_bar = ttk.Frame(self)
-        search_bar.pack(fill="x", padx=12, pady=(0, 8))
+        search_bar.pack(fill="x", padx=PAD, pady=(0, 8))
         self.search_var = tk.StringVar()
         search_entry = ttk.Entry(search_bar, textvariable=self.search_var)
         search_entry.pack(side="left", fill="x", expand=True)
@@ -29,29 +30,29 @@ class CatalogScreen(ttk.Frame):
         ttk.Button(search_bar, text="Show all", command=self._show_all).pack(side="left", padx=(6, 0))
 
         self.warning_label = ttk.Label(self, text="", foreground="#a06400")
-        self.warning_label.pack(fill="x", padx=12)
+        self.warning_label.pack(fill="x", padx=PAD)
 
         columns = ("title", "author", "price", "stock")
         self.tree = ttk.Treeview(self, columns=columns, show="headings")
         for col, heading, width, anchor in (
-            ("title", "Title", 260, "w"),
-            ("author", "Author", 180, "w"),
-            ("price", "Price", 80, "center"),
-            ("stock", "Stock", 80, "center"),
+                ("title", "Title", 260, "w"),
+                ("author", "Author", 180, "w"),
+                ("price", "Price", 80, "center"),
+                ("stock", "Stock", 80, "center"),
         ):
             self.tree.heading(col, text=heading)
             self.tree.column(col, width=width, anchor=anchor)
-        self.tree.pack(fill="both", expand=True, padx=12, pady=(0, 8))
+        self.tree.pack(fill="both", expand=True, padx=PAD, pady=(0, 8))
 
         purchase_bar = ttk.Frame(self)
-        purchase_bar.pack(fill="x", padx=12, pady=(0, 4))
+        purchase_bar.pack(fill="x", padx=PAD, pady=(0, 4))
         ttk.Label(purchase_bar, text="Quantity:").pack(side="left")
         self.quantity_var = tk.StringVar(value="1")
         ttk.Entry(purchase_bar, textvariable=self.quantity_var, width=6).pack(side="left", padx=(4, 12))
         ttk.Button(purchase_bar, text="Buy selected", command=self._buy).pack(side="left")
 
         self.purchase_result_label = ttk.Label(self, text="")
-        self.purchase_result_label.pack(fill="x", padx=12, pady=(0, 12))
+        self.purchase_result_label.pack(fill="x", padx=PAD, pady=(0, 12))
 
         self.books_by_row = {}
 
