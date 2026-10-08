@@ -1,5 +1,16 @@
 # Changelog
 
+## v0.5.7 — Robustness and polish — 08/10/2026
+
+### Added
+- `gui/dialogs.py` — `confirm()`, a unified point for yes/no confirmations (used when deleting a book)
+- `gui/style.py` — `clam` theme, shared font with fallback, `PAD` constant
+
+### Changed
+- `AdminScreen._delete_selected`: now requests confirmation before deletion (matching CLI behavior)
+- `BookstoreApp`: applies `apply_style()` on startup
+- `catalog.py`, `history.py`, `admin.py`, `deleted_books.py`: `padx=12` → `PAD`
+
 ## v0.5.6 — Admin panel — 06/10/2026
 
 ### Added

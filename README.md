@@ -80,17 +80,19 @@ BookByteStore/
     │   ├── admin_menu.py                           # AdminMenu (includes option to view & restore deleted books)
     │   └── formatting.py                            # shared output functions
     ├─  gui/                                     # Tkinter interface
-│   │   ├── app.py                               # BookstoreApp: root window, screen switching controller
-│   │   └── screens/                             # Application screens
-            ├── admin.py                         # AdminScreen
-│   │       ├── login.py                         # LoginScreen
-│   │       ├── register.py                      # RegisterScreen
-│   │       ├── home.py                          # HomeScreen
+    │   ├── app.py                               # BookstoreApp: root window, screen switching controller
+    │   ├── dialogs.py                           # Messagebox: confirm
+    │   ├── style.py                             # constants PAD and apply style
+    │   └── screens/                             # Application screens
+    │       ├── admin.py                         # AdminScreen
+    │       ├── login.py                         # LoginScreen
+    │       ├── register.py                      # RegisterScreen
+    │       ├── home.py                          # HomeScreen
     │       ├── history.py                       # HistoryScreen
     │       ├── top_up_dialog.py                 # TopUpDialog
-            ├── book_form_dialog.py              # BookFormDialog
-            ├── deleted_books.py                 # DeletedBooksScreen
-│   │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label, inline book purchasing & dynamic balance/stock updates)
+    │       ├── book_form_dialog.py              # BookFormDialog
+    │       ├── deleted_books.py                 # DeletedBooksScreen
+    │       └── catalog.py                       # CatalogScreen (ttk.Treeview, search, non-blocking warning label, inline book purchasing & dynamic balance/stock updates)
     tests/                                             # pytest suite
     ├── conftest.py                                    # fake repository fixtures mirroring SQL semantics
     ├── test_auth_service.py                           # AuthService tests

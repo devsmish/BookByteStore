@@ -119,6 +119,13 @@
 - [x] `HomeScreen`: "Admin panel" button visible only if `user.is_admin` — same logic as in the console-based `UserMenu`
 - [x] Import from file — `filedialog.askopenfilename()`; cancelling the selection (empty string) does not trigger the import
 
+## v0.5.7 — Stability and Polish
+- [x] `gui/dialogs.py`: `confirm()` — a unified point for yes/no confirmations. Used only for book deletion (matching the CLI, where `admin_menu` already prompts for `y/n`); intentionally *not* used for informational messages or errors, which remain inline labels (see the decision from v1.3).
+- [x] **Threading — a clear decision was made, not just bypassed:** service calls remain synchronous within the main Tkinter thread. The rationale and criteria for revisiting this are documented in `README.md` rather than just kept in mind: the local database responds in tens of milliseconds, and `threading` would introduce real risk (Tkinter is not thread-safe and requires queue-based marshalling) to solve a problem that does not currently exist.
+- [x] `gui/style.py`: switched from `default` to `clam` theme (consistent across Windows, macOS, and Linux); implemented a shared font with a fallback option in case `Segoe UI` is unavailable on the system
+- [x] Replaced hardcoded `padx=12` values with a named constant `PAD` across the four affected screens (17 instances); adjusting the padding throughout the application now requires a single edit rather than a search across multiple files
+- [x] Successfully executed a headless test scenario: verified deletion confirmation (Cancel → book not deleted; Confirm → book deleted); confirmed the `clam` theme is applied (`ttk.Style().theme_use() == "clam"`); verified that all four screens affected by the padding refactor (`Catalog`, `History`, `Admin`, `DeletedBooks`) still open without errors
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)
