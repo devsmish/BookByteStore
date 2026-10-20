@@ -1,7 +1,9 @@
 import os
+import re
 
 import pymysql
 from dotenv import load_dotenv
+from pymysql.constants import CLIENT
 
 from app.logging_config import get_logger
 
@@ -30,6 +32,18 @@ class DatabaseConnectionError(Exception):
     """A clear error message instead of a raw traceback from PyMySQL."""
 
 
+_DB_NAME_RE = re.compile(r"[A-Za-z0-9_]+")
+
+
+def _require_db_name():
+    """Fail early and clearly instead of e.g. running `CREATE DATABASE None`."""
+    if not db_name:
+        raise DatabaseConnectionError("MYSQL_DB_NAME is not set. Check the .env file!")
+    if not _DB_NAME_RE.fullmatch(db_name):
+        raise DatabaseConnectionError("MYSQL_DB_NAME may contain only letters, digits and underscores.")
+    return db_name
+
+
 def _connect(config, role, database=None):
     missing = [k for k in ("host", "user", "password") if not config.get(k)]
     if missing:
@@ -43,6 +57,15 @@ def _connect(config, role, database=None):
     if database:
         conn_kwargs["database"] = database
 
+    # rowcount must mean "rows matched by the WHERE", not "rows whose value changed": services
+    # read `rowcount == 0` as "no such row" (e.g. saving a book without edits, a free purchase).
+    conn_kwargs["client_flag"] = CLIENT.FOUND_ROWS
+    if role == "read":
+        # Read-only connection: no transaction. Without this it keeps ONE transaction open for the
+        # whole session and, under the default REPEATABLE READ, keeps seeing the data as it was at
+        # its first SELECT - never the commits made through the edit connection.
+        conn_kwargs["autocommit"] = True
+
     try:
         return pymysql.connect(**conn_kwargs)
     except pymysql.err.OperationalError as e:
@@ -51,19 +74,20 @@ def _connect(config, role, database=None):
 
 
 def get_read_connection(select_db: bool = True):
-    return _connect(config_read, "read", database=db_name if select_db else None)
+    return _connect(config_read, "read", database=_require_db_name() if select_db else None)
 
 
 def get_edit_connection(select_db: bool = True):
-    return _connect(config_edit, "edit", database=db_name if select_db else None)
+    return _connect(config_edit, "edit", database=_require_db_name() if select_db else None)
 
 
 def init_db():
     """Creates the database and tables. Requires an edit user with the CREATE privilege."""
+    name = _require_db_name()
     with get_edit_connection(select_db=False) as connection:
         with connection.cursor() as cursor:
-            cursor.execute(f"CREATE DATABASE IF NOT EXISTS {db_name}")
-            cursor.execute(f"USE {db_name}")
+            cursor.execute(f"CREATE DATABASE IF NOT EXISTS `{name}`")
+            cursor.execute(f"USE `{name}`")
 
             cursor.execute("""
                 CREATE TABLE IF NOT EXISTS books (
