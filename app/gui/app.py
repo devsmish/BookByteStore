@@ -1,5 +1,9 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import messagebox, ttk
+
+from app.logging_config import get_logger
+
+logger = get_logger(__name__)
 
 
 class BookstoreApp(tk.Tk):
@@ -34,6 +38,23 @@ class BookstoreApp(tk.Tk):
         from app.gui.screens.login import LoginScreen
 
         self.show_screen(LoginScreen)
+
+    def report_callback_exception(self, exc, val, tb):
+        """Tk calls this when ANY button/key/`after` callback raises.
+
+        By default Tk only prints the traceback to stderr, which nobody sees in a windowed app: the
+        button just seems dead, and nothing reaches the log file. Log it and tell the user instead.
+        """
+        logger.error("Unhandled error in a GUI callback: %s", val, exc_info=(exc, val, tb))
+        try:
+            messagebox.showerror(
+                "Unexpected error",
+                f"Something went wrong and the action was not completed.\n\n{val}\n\n"
+                "Details were written to the log file.",
+                parent=self,
+            )
+        except Exception:
+            logger.exception("Could not show the error dialog")
 
     def show_screen(self, screen_class, **kwargs):
         """Creates a screen of the specified class and makes it visible, destroying the previous one."""
