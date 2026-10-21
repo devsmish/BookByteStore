@@ -1,4 +1,5 @@
 from app.exceptions import BookNotFoundError, InvalidInputError
+from app.limits import MAX_AUTHOR_LEN, MAX_INT, MAX_MONEY, MAX_TITLE_LEN
 from app.logging_config import get_logger
 from app.models import Book
 from app.money import parse_money
@@ -47,22 +48,31 @@ class AdminService:
     def import_from_file(self, filename):
         added = 0
         skipped = 0
-        with open(filename, encoding="utf-8") as file:
-            for line in file:
-                parts = line.strip().split(",")
-                if len(parts) != 4:
-                    skipped += 1
-                    continue  # skip invalid lines
-                title, author, price, stock = parts
-                try:
-                    price = parse_money(price)
-                    stock = int(stock)
-                except ValueError:
-                    skipped += 1
-                    continue  # skip rows with an invalid price/stock level
-                self._books.upsert_by_title_author(title.strip(), author.strip(), price, stock)
-                added += stock
-        self._books.commit()
+        try:
+            # utf-8-sig: files saved by Excel ("CSV UTF-8") or older Notepad start with a BOM,
+            # which would otherwise end up inside the first book's title.
+            with open(filename, encoding="utf-8-sig") as file:
+                for line in file:
+                    parts = line.strip().split(",")
+                    if len(parts) != 4:
+                        skipped += 1
+                        continue  # skip invalid lines
+                    title, author, price, stock = (part.strip() for part in parts)
+                    try:
+                        price = parse_money(price)
+                        stock = int(stock)
+                        self._validate(title, author, price, stock)
+                    except (ValueError, InvalidInputError):
+                        skipped += 1
+                        continue  # skip rows with an invalid or out-of-range value
+                    self._books.upsert_by_title_author(title, author, price, stock)
+                    added += stock
+            self._books.commit()
+        except Exception:
+            # Without this, the rows already upserted stay pending on the shared connection
+            # and the next unrelated commit() would persist a half-finished import.
+            self._books.rollback()
+            raise
         logger.info("Imported %s books from file '%s' (%s lines skipped)", added, filename, skipped)
         return added
 
@@ -70,5 +80,13 @@ class AdminService:
     def _validate(title, author, price, stock):
         if not title or not title.strip() or not author or not author.strip():
             raise InvalidInputError("Title and author cannot be empty")
+        if len(title.strip()) > MAX_TITLE_LEN:
+            raise InvalidInputError(f"Title is too long (maximum {MAX_TITLE_LEN} characters)")
+        if len(author.strip()) > MAX_AUTHOR_LEN:
+            raise InvalidInputError(f"Author is too long (maximum {MAX_AUTHOR_LEN} characters)")
         if price < 0 or stock < 0:
             raise InvalidInputError("Price and stock cannot be negative")
+        if price > MAX_MONEY:
+            raise InvalidInputError(f"Price is too large (maximum {MAX_MONEY})")
+        if stock > MAX_INT:
+            raise InvalidInputError(f"Stock is too large (maximum {MAX_INT})")
