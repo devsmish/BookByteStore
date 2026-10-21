@@ -5,6 +5,7 @@ from app.exceptions import (
     InsufficientStockError,
     InvalidInputError,
 )
+from app.limits import MAX_MONEY
 from app.logging_config import get_logger
 
 logger = get_logger(__name__)
@@ -36,12 +37,25 @@ class PurchaseService:
             self._purchases.add(user_id, book_id, quantity)
             self._edit_connection.commit()
         except BookstoreError as e:
-            self._edit_connection.rollback()
+            self._rollback()
             logger.warning("Purchase failed for user %s, book %s: %s", user_id, book_id, e)
+            raise
+        except Exception:
+            # Not a domain error (lock timeout, lost connection, ...). The half-finished purchase must
+            # still be rolled back: it would otherwise stay pending on the shared edit connection and be
+            # committed by the next unrelated write - money and stock gone, no purchase record.
+            self._rollback()
+            logger.exception("Purchase failed unexpectedly for user %s, book %s", user_id, book_id)
             raise
 
         logger.info("User %s purchased %s x book %s (#%s) for %s", user_id, quantity, book.title, book_id, total)
         return total
+
+    def _rollback(self):
+        try:
+            self._edit_connection.rollback()
+        except Exception:
+            logger.exception("Rollback failed")
 
     def history(self, user_id):
         return self._purchases.get_by_user(user_id)
@@ -49,6 +63,7 @@ class PurchaseService:
     def top_up(self, user_id, amount):
         if amount <= 0:
             raise InvalidInputError("Amount must be positive")
-        self._users.increase_balance(user_id, amount)
+        if not self._users.increase_balance(user_id, amount):
+            raise InvalidInputError(f"Top-up would exceed the maximum balance ({MAX_MONEY})")
         logger.info("User %s topped up balance by %s", user_id, amount)
         return self._users.get_balance(user_id)

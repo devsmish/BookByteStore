@@ -1,5 +1,6 @@
 from app.config import is_admin
 from app.exceptions import InvalidCredentialsError, InvalidInputError, UsernameTakenError
+from app.limits import MAX_MONEY, MAX_PASSWORD_BYTES, MAX_USERNAME_LEN
 from app.logging_config import get_logger
 from app.models import User
 
@@ -15,8 +16,14 @@ class AuthService:
 
         if not username or not password:
             raise InvalidInputError("Username and password cannot be empty")
+        if len(username) > MAX_USERNAME_LEN:
+            raise InvalidInputError(f"Username is too long (maximum {MAX_USERNAME_LEN} characters)")
+        if len(password.encode("utf-8")) > MAX_PASSWORD_BYTES:
+            raise InvalidInputError(f"Password is too long (maximum {MAX_PASSWORD_BYTES} bytes)")
         if balance < 0:
             raise InvalidInputError("Balance cannot be negative")
+        if balance > MAX_MONEY:
+            raise InvalidInputError(f"Balance is too large (maximum {MAX_MONEY})")
         if self._users.username_exists(username):
             logger.info("Registration failed: username '%s' already taken", username)
             raise UsernameTakenError(username)
