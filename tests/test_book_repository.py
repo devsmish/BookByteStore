@@ -109,3 +109,13 @@ def test_restore_clears_deleted_at():
     assert "deleted_at = NULL" in sql
     assert result == 1
     assert edit_conn.commit.called
+
+
+def test_rollback_is_delegated_to_the_edit_connection():
+    read_conn, _ = make_connection()
+    edit_conn, _ = make_connection()
+
+    BookRepository(read_conn, edit_conn).rollback()
+
+    assert edit_conn.rollback.called
+    assert not read_conn.rollback.called
