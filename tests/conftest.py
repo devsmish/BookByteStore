@@ -15,6 +15,7 @@ class FakeBookRepo:
             1: Book(id=1, title="Dune", author="Herbert", price=Decimal("10.00"), stock=5, deleted_at=None)
         }
         self.next_id = max(self.books, default=0) + 1
+        self.rolled_back = False
 
     def get_all(self):
         return [b for b in self.books.values() if b.stock > 0 and b.deleted_at is None]
@@ -82,6 +83,9 @@ class FakeBookRepo:
 
     def commit(self):
         pass
+
+    def rollback(self):
+        self.rolled_back = True
 
 
 class FakeUserRepo:

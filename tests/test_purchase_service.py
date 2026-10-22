@@ -98,3 +98,39 @@ def test_purchase_history_survives_book_deletion(purchase_service, book_repo, us
     history = purchase_service.history(1)
     assert len(history) == 1
     assert history[0].title == "Dune"
+
+
+def test_any_unexpected_error_rolls_back_the_purchase(purchase_service, purchase_repo, connection, user1):
+    """A non-domain error (lock timeout, lost connection...) must not leave a half-finished
+    transaction on the shared connection: the next commit would persist it."""
+    def boom(*args, **kwargs):
+        raise RuntimeError("lock wait timeout")
+
+    purchase_repo.add = boom
+
+    with pytest.raises(RuntimeError):
+        purchase_service.purchase(1, 1, 1)
+
+    assert connection.rolled_back is True
+    assert connection.committed is False
+
+
+def test_a_failing_rollback_does_not_hide_the_original_error(purchase_service, purchase_repo, connection, user1):
+    def boom(*args, **kwargs):
+        raise RuntimeError("original problem")
+
+    def broken_rollback():
+        raise ConnectionError("server has gone away")
+
+    purchase_repo.add = boom
+    connection.rollback = broken_rollback
+
+    with pytest.raises(RuntimeError, match="original problem"):
+        purchase_service.purchase(1, 1, 1)
+
+
+def test_top_up_over_the_balance_limit_is_rejected(purchase_service, user_repo, user1):
+    user_repo.increase_balance = lambda user_id, amount: 0  # the repository refuses (limit exceeded)
+
+    with pytest.raises(InvalidInputError):
+        purchase_service.top_up(1, Decimal("10.00"))
