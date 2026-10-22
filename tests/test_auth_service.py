@@ -71,3 +71,29 @@ def test_login_non_admin_by_default(auth_service, monkeypatch):
     auth_service.register("bob", "pw123", Decimal("10"))
     user = auth_service.login("bob", "pw123")
     assert user.is_admin is False
+
+
+def test_register_rejects_too_long_username(auth_service):
+    with pytest.raises(InvalidInputError):
+        auth_service.register("u" * 101, "pw", Decimal("1"))
+
+
+def test_register_accepts_longest_allowed_username(auth_service):
+    assert auth_service.register("u" * 100, "pw", Decimal("1")).username == "u" * 100
+
+
+def test_register_rejects_balance_that_does_not_fit_the_column(auth_service):
+    with pytest.raises(InvalidInputError):
+        auth_service.register("bob", "pw", Decimal("100000000.00"))
+
+
+def test_register_rejects_password_longer_than_bcrypt_can_use(auth_service):
+    """bcrypt only uses the first 72 bytes (4.x silently ignores the rest, 5.x raises ValueError)."""
+    with pytest.raises(InvalidInputError):
+        auth_service.register("bob", "x" * 73, Decimal("1"))
+    with pytest.raises(InvalidInputError):
+        auth_service.register("bob", "я" * 37, Decimal("1"))  # 74 bytes in UTF-8
+
+
+def test_register_accepts_a_72_byte_password(auth_service):
+    assert auth_service.register("bob", "x" * 72, Decimal("1")).username == "bob"

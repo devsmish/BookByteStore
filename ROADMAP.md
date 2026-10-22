@@ -126,6 +126,16 @@
 - [x] Replaced hardcoded `padx=12` values with a named constant `PAD` across the four affected screens (17 instances); adjusting the padding throughout the application now requires a single edit rather than a search across multiple files
 - [x] Successfully executed a headless test scenario: verified deletion confirmation (Cancel → book not deleted; Confirm → book deleted); confirmed the `clam` theme is applied (`ttk.Style().theme_use() == "clam"`); verified that all four screens affected by the padding refactor (`Catalog`, `History`, `Admin`, `DeletedBooks`) still open without errors
 
+## v0.6.0 — Bug fixes after a control review
+- [x] Read connection runs with `autocommit`: no more stale balance / book lists / history / stock / price, and login works right after registration (reproduced on real MySQL 8.0)
+- [x] `CLIENT.FOUND_ROWS`: `rowcount` means "rows matched" (saving an unchanged book, buying a free book)
+- [x] Any unexpected error rolls back a purchase / a file import (no half-finished transactions left on the shared edit connection)
+- [x] Explicit column list in `authenticate` (works with and without `users.is_admin`); `MYSQL_DB_NAME` validated and quoted
+- [x] Input limits mirroring the schema (`../app/limits.py`); `parse_money` rejects NaN/Infinity/out-of-range; bcrypt 72-byte limit; UTF-8 BOM in imports
+- [x] GUI: unhandled callback errors are logged and shown
+- [x] `tests/integration` against a real MySQL (opt-in) + CI job `integration`
+- [ ] Not done, only reported: automatic reconnect after the server drops an idle connection (`wait_timeout`)
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

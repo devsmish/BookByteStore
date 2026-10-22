@@ -29,3 +29,42 @@ jobs:
 
       - name: Tests
         run: pytest --cov=app --cov-report=term-missing
+
+  integration:
+    # tests/integration against a real MySQL 8.0. The unit tests use mocked connections, so they cannot
+    # see transaction/isolation behaviour or driver semantics (stale reads, rowcount) - this job can.
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ci_root_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -pci_root_password"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+
+    env:
+      BBS_TEST_DB_HOST: 127.0.0.1
+      BBS_TEST_DB_PORT: "3306"
+      BBS_TEST_DB_USER: root
+      BBS_TEST_DB_PASSWORD: ci_root_password
+      BBS_TEST_DB_NAME: bookbytestore_itest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Integration tests
+        run: pytest tests/integration -v

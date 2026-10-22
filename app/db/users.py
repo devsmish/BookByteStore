@@ -1,5 +1,6 @@
 import bcrypt
 
+from app.limits import MAX_MONEY, MAX_PASSWORD_BYTES
 from app.models import User
 
 
@@ -27,14 +28,16 @@ class UserRepository:
 
     def authenticate(self, username, password):
         with self._read.cursor() as cursor:
-            cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
+            cursor.execute("SELECT id, username, password, balance FROM users WHERE username = %s", (username,))
             row = cursor.fetchone()
 
         if not row:
             return None
 
-        user_id, db_username, stored_password, balance, _ = row
-        if not bcrypt.checkpw(password.encode("utf-8"), stored_password.encode("utf-8")):
+        user_id, db_username, stored_password, balance = row
+        # bcrypt only uses the first 72 bytes: 4.x ignores the rest silently, 5.x raises ValueError.
+        # Passing at most 72 bytes keeps accounts created with long passwords working on both.
+        if not bcrypt.checkpw(password.encode("utf-8")[:MAX_PASSWORD_BYTES], stored_password.encode("utf-8")):
             return None
 
         return User(id=user_id, username=db_username, balance=balance)
@@ -54,11 +57,13 @@ class UserRepository:
 
     def increase_balance(self, user_id, amount):
         with self._edit.cursor() as cursor:
+            # The limit is checked inside the UPDATE (atomically): returns 0 when the new balance would
+            # not fit DECIMAL(10,2) instead of failing with a driver error (or clamping, without STRICT mode).
             cursor.execute("""
                 UPDATE users
                 SET balance = balance + %s
-                WHERE id = %s
-            """, (amount, user_id))
+                WHERE id = %s AND balance + %s <= %s
+            """, (amount, user_id, amount, MAX_MONEY))
             updated = cursor.rowcount
         self._edit.commit()
         return updated

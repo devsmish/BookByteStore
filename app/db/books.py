@@ -113,6 +113,9 @@ class BookRepository:
     def commit(self):
         self._edit.commit()
 
+    def rollback(self):
+        self._edit.rollback()
+
     @staticmethod
     def _to_book(row):
         book_id, title, author, price, stock, deleted_at = row
