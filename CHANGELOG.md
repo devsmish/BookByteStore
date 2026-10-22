@@ -1,5 +1,49 @@
 # Changelog
 
+## v0.6.0 — Bug fixes after a control review — 22/10/2026
+
+### Fixed
+- **Stale data on the read connection.** The read connection kept one transaction open for the whole
+  session, so under MySQL's default `REPEATABLE READ` it kept seeing the data as of its first `SELECT`
+  and never the commits made through the edit connection. Visible effects, all reproduced on a real
+  MySQL 8.0: the balance did not change on the form after a top-up (only restarting the app helped);
+  a user could not log in right after registering; the admin panel did not show a book just added,
+  edited or deleted; the purchase history and stock were not refreshed after a purchase; and a
+  purchase was **charged at the old price** after an admin changed it. The read connection now uses
+  `autocommit`.
+- **`cursor.rowcount` meant "rows changed", not "rows matched".** Saving a book without edits
+  reported "Book not found"; buying a free (0.00) book reported "Insufficient balance". Connections
+  now use `CLIENT.FOUND_ROWS`.
+- **Half-finished purchase could be committed later.** On any exception that is not a
+  `BookstoreError` (lock timeout, lost connection, ...) there was no rollback, so the next unrelated
+  commit persisted the partial purchase (stock and balance written off, no purchase record). Any error
+  now rolls back. The same applies to a failed file import.
+- **Login crashed** (`ValueError: not enough values to unpack`) on a database whose `users` table was
+  created before the `is_admin` column existed. `authenticate` now selects explicit columns.
+- **A missing `MYSQL_DB_NAME` silently ran `CREATE DATABASE None`.** It is now reported clearly and
+  the name is validated and quoted.
+- **Input that did not fit the schema leaked raw driver errors** (or was silently truncated on servers
+  without STRICT mode): `NaN`/`Infinity`/`1e50`, amounts over `99999999.99`, titles over 200 and
+  authors/usernames over 100 characters, stock over `INT`. Passwords over 72 bytes were silently cut
+  by `bcrypt` 4.x (and raise `ValueError` on 5.x). These are now domain errors with clear messages.
+- **File import:** a UTF-8 BOM (Excel "CSV UTF-8", older Notepad) ended up inside the first title;
+  rows with empty/negative/out-of-range values are now skipped like other invalid rows.
+- **GUI:** an unhandled exception in a Tk callback was invisible in a windowed app (the button simply
+  did nothing and nothing reached the log). It is now logged and shown in an error dialog.
+- `requirements.txt` was saved as UTF-16; converted to UTF-8 so tools such as Dependabot can read it.
+
+### Added
+- `../app/limits.py` — limits that mirror the database schema.
+- `tests/integration` — 17 tests that run the real code against a real MySQL (opt-in, see README).
+- `../tests/test_database.py`, `../tests/test_gui_robustness.py`, and new unit tests for every fix above.
+- CI job `integration` (MySQL 8.0 service container).
+
+### Changed
+- `top_up` refuses an amount that would push the balance over `DECIMAL(10,2)`; the limit is checked
+  atomically inside the `UPDATE`.
+- `UserRepository.authenticate` hands at most 72 bytes to `bcrypt`, so accounts created with long
+  passwords keep working on both `bcrypt` 4.x and 5.x.
+
 ## v0.5.7 — Robustness and polish — 08/10/2026
 
 ### Added

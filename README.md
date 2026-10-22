@@ -60,6 +60,7 @@ BookByteStore/
     ├── logging_config.py        # centralized logger configuration (file rotation + console handler)
     ├── main.py                    # entry point, assembling repositories/services & global exception handling
     ├── money.py                 # parse_money() utility for Decimal conversion & ROUND_HALF_UP rounding
+    ├── limits.py                # limits mirroring the DB schema (DECIMAL(10,2), INT, VARCHAR sizes, bcrypt 72 bytes)
     ├── models.py                # domain models: Book (with deleted_at), User, Purchase (Decimal for monetary attributes)
     ├── exceptions.py             # domain exceptions
     ├── bootstrap.py               # Services: building repositories/services for CLI and GUI
@@ -102,7 +103,15 @@ BookByteStore/
     ├── test_money.py                                  # parse_money() precision & rounding tests
     ├── test_book_repository.py                        # BookRepository SQL contract tests
     ├── test_user_repository.py                        # UserRepository & real bcrypt tests
-    └── test_purchase_repository.py                    # PurchaseRepository SQL contract tests
+    ├── test_database.py                               # how connections are opened (autocommit read conn, FOUND_ROWS, DB name checks)
+    ├── test_gui_robustness.py                         # unhandled Tk callback errors are logged and shown (needs a display; skipped otherwise)
+    ├── test_purchase_repository.py                    # PurchaseRepository SQL contract tests
+    └── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
+        ├── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
+        ├── conftest.py                                    # real MySQL connection/DB fixtures & BBS_TEST_DB_* safeguards
+        ├── test_stale_reads.py                            # read isolation & cross-connection balance visibility tests
+        ├── test_rowcount_semantics.py                     # PyMySQL CLIENT.FOUND_ROWS matched vs affected row tests
+        └── test_transactions_and_limits.py                # explicit rollback safety & DECIMAL/schema boundary tests
 ```
 
 ## Configuration (.env)
@@ -137,6 +146,31 @@ ruff check app tests                        # linter
 
 Coverage: `services/` and `db/` repositories (63 tests: unit tests using fake repositories + repository 
 tests using `pymysql` connection mocks that verify the actual SQL).
+
+### Integration tests (real MySQL)
+
+The unit tests use mocked connections, so they cannot see transaction/isolation behaviour or driver
+semantics (e.g. stale reads on a long-lived connection, `cursor.rowcount`). `tests/integration` runs the
+real application code against a real MySQL server.
+
+> **They `DROP` and re-create a database.** For safety they never read `.env`, run only when the
+> dedicated `BBS_TEST_DB_*` variables are set, and refuse a database whose name does not contain `test`.
+> Never point them at your real database.
+
+```bash
+# Linux/macOS
+BBS_TEST_DB_HOST=127.0.0.1 BBS_TEST_DB_USER=root BBS_TEST_DB_PASSWORD=secret \
+BBS_TEST_DB_NAME=bookstore_itest pytest tests/integration -v
+```
+
+```powershell
+# Windows PowerShell
+$env:BBS_TEST_DB_HOST="127.0.0.1"; $env:BBS_TEST_DB_USER="root"; $env:BBS_TEST_DB_PASSWORD="secret"
+$env:BBS_TEST_DB_NAME="bookstore_itest"; pytest tests/integration -v
+```
+
+Without these variables the integration tests are simply skipped, so plain `pytest` keeps working.
+In CI they run in a separate `integration` job against a MySQL 8.0 service container.
 
 ## Roadmap
 
