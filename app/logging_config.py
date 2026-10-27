@@ -4,7 +4,9 @@ from logging.handlers import RotatingFileHandler
 
 from dotenv import load_dotenv
 
-load_dotenv()
+from app.env import get_base_dir, get_env_path
+
+load_dotenv(get_env_path())
 
 _configured = False
 
@@ -19,7 +21,8 @@ def setup_logging():
         return
     _configured = True
 
-    log_file = os.getenv("LOG_FILE", "bookstore.log")
+    # Default next to the application (not the working directory, which for a shortcut can be anywhere).
+    log_file = os.getenv("LOG_FILE", str(get_base_dir() / "bookstore.log"))
     log_level = os.getenv("LOG_LEVEL", "INFO").upper()
 
     logger = logging.getLogger("bookstore")
