@@ -5,9 +5,10 @@ import pymysql
 from dotenv import load_dotenv
 from pymysql.constants import CLIENT
 
+from app.env import get_env_path
 from app.logging_config import get_logger
 
-load_dotenv()
+load_dotenv(get_env_path())
 
 logger = get_logger(__name__)
 

@@ -5,10 +5,11 @@ from dotenv import load_dotenv
 from pymongo import MongoClient
 from pymongo.errors import PyMongoError
 
+from app.env import get_env_path
 from app.exceptions import SearchLogError
 from app.logging_config import get_logger
 
-load_dotenv()
+load_dotenv(get_env_path())
 
 logger = get_logger(__name__)
 
