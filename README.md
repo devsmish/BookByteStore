@@ -49,14 +49,28 @@ from `pip` (e.g., `sudo apt install python3-tk` on Debian/Ubuntu); it is not
 included in `requirements.txt` because `tkinter` is not installed via `pip`.
 On Windows/macOS, it is usually included in the standard Python installation.
 
+### Building an executable (Windows)
+
+```bash
+pip install -r requirements-build.txt
+python build_scripts/build.py
+```
+
+Produces a single `dist/BookByteStore.exe`; put a filled-in `.env` next to it. Details, including what was
+verified and what the exe does not make safer: `../build_scripts/README.md`.
+
 ## Structure
 
 ```
 BookByteStore/
 ├── pytest.ini                 # pytest suite configuration
+├── bookstore.spec             # PyInstaller recipe: single-file GUI executable
+├── build_scripts/             # build.py + README: building the executable
+├── requirements-build.txt     # PyInstaller, on top of requirements.txt
     app/
     ├── database.py            # connection config (read/edit) from .env, connection error logging & DB initialization/migrations
     ├── config.py               # list of admins (ADMIN_USERNAMES) from .env
+    ├── env.py                   # where .env and the default log file live (next to the exe in a packaged build)
     ├── logging_config.py        # centralized logger configuration (file rotation + console handler)
     ├── main.py                    # entry point, assembling repositories/services & global exception handling
     ├── money.py                 # parse_money() utility for Decimal conversion & ROUND_HALF_UP rounding
@@ -106,6 +120,8 @@ BookByteStore/
     ├── test_database.py                               # how connections are opened (autocommit read conn, FOUND_ROWS, DB name checks)
     ├── test_gui_robustness.py                         # unhandled Tk callback errors are logged and shown (needs a display; skipped otherwise)
     ├── test_purchase_repository.py                    # PurchaseRepository SQL contract tests
+    ├── test_env.py                                    # .env / default log path do not depend on the working directory
+    ├── test_packaging.py                              # guards for the PyInstaller setup (spec entry point, .gitignore)
     └── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
         ├── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
         ├── conftest.py                                    # real MySQL connection/DB fixtures & BBS_TEST_DB_* safeguards

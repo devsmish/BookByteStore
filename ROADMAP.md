@@ -136,6 +136,13 @@
 - [x] `tests/integration` against a real MySQL (opt-in) + CI job `integration`
 - [ ] Not done, only reported: automatic reconnect after the server drops an idle connection (`wait_timeout`)
 
+## v0.7.0 — Windows executable (PyInstaller)
+- [x] `bookstore.spec` + `../build_scripts/build.py` (single-file GUI build, `.env.example` staged next to the exe), `../requirements-build.txt`
+- [x] `../app/env.py`: `.env` and the default log file are resolved relative to the exe, not the working directory
+- [x] Verified with a real build (a Linux binary built by the same PyInstaller): all lazily imported screens are bundled; `.env` is found and `bookstore.log` is written next to the binary even when it is started from another folder; startup errors (missing `.env`, unreachable DB) are shown in a dialog
+- [ ] Not verified: a real run of the `.exe` on a clean Windows machine (SmartScreen / antivirus on an unsigned binary)
+- [ ] Not done: window/exe icon (needs a `.ico` file)
+
 ## v1.0 — Release
 - Tests (`pytest`) for `db` and `services`
 - CI (lint + tests)

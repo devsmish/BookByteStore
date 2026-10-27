@@ -1,5 +1,25 @@
 # Changelog
 
+## v0.7.0 — Windows executable (PyInstaller) — 27/10/2026
+
+### Added
+- `bookstore.spec`, `../build_scripts/build.py`, `../build_scripts/README.md`, `../requirements-build.txt` — one-file
+  GUI build (`python build_scripts/build.py`); `.env.example` is staged next to the exe.
+- `../app/env.py` — `get_env_path()` / `get_base_dir()`: the `.env` file and the default log file are resolved
+  relative to the application (the exe when packaged), not the working directory.
+- `../tests/test_env.py`, `../tests/test_packaging.py` — guards for the path resolution and for the build recipe.
+
+### Fixed
+- A packaged exe could not find a `.env` lying next to it when started from another folder (shortcut,
+  double-click): python-dotenv starts its search from the working directory in a frozen app. All four
+  `load_dotenv()` calls now use the explicit path.
+- `.env.example` pinned `LOG_FILE=bookstore.log`; copied to `.env` it overrode the default and, being relative,
+  put the log into whatever folder the app was started from. The variable is now commented out.
+- `.gitignore` contained `*.spec`, which would have kept `bookstore.spec` out of git; added `!bookstore.spec`.
+
+### Changed
+- README: the `UserRepository` description no longer mentions the removed 5-column tuple unpacking.
+
 ## v0.6.0 — Bug fixes after a control review — 22/10/2026
 
 ### Fixed
