@@ -27,8 +27,12 @@ jobs:
       - name: Syntax check
         run: python -m py_compile $(find app -name "*.py")
 
+      - name: Install a virtual display (GUI tests)
+        run: sudo apt-get update && sudo apt-get install -y xvfb
+
       - name: Tests
-        run: pytest --cov=app --cov-report=term-missing
+        # xvfb-run gives Tk a display, so tests/gui run instead of being skipped.
+        run: xvfb-run -a pytest --cov=app --cov-report=term-missing
 
   integration:
     # tests/integration against a real MySQL 8.0. The unit tests use mocked connections, so they cannot
