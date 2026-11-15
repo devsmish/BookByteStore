@@ -8,6 +8,9 @@ without a database. Needs Tk and a display; the whole package is skipped when ei
 Tk's blocking helpers (messagebox / filedialog) are replaced: a real one would freeze the test.
 """
 import dataclasses
+import time
+import tkinter
+import warnings
 from decimal import Decimal
 
 import pytest
@@ -34,6 +37,34 @@ class GuiUserRepo(FakeUserRepo):
     def authenticate(self, username, password):
         user = super().authenticate(username, password)
         return dataclasses.replace(user) if user else None
+
+
+# Messages Tcl/Tk raises when it cannot load its own library files while an interpreter is being created.
+_TCL_STARTUP_GLITCHES = ("init.tcl", "tk.tcl", "tcl_findLibrary", "usable")
+
+
+def is_tcl_startup_glitch(exc):
+    return any(marker in str(exc) for marker in _TCL_STARTUP_GLITCHES)
+
+
+def create_with_retry(factory, *args, attempts=8, delay=0.3):
+    """Call `factory(*args)` (creates a Tk window), retrying when Tk fails to load its own library files.
+
+    Seen on Windows (Python 3.14): in the first seconds of a pytest run, `Tk()` sometimes fails at random with
+    "Can't find a usable init.tcl ... No error", "couldn't read file .../panedwindow.tcl: no such file" (the file
+    exists) or `invalid command name "tcl_findLibrary"`. The next creation usually works. Only these errors are
+    retried, with a growing pause; anything else (e.g. no display) is raised at once, and so is a glitch that
+    survives all attempts.
+    """
+    for attempt in range(1, attempts + 1):
+        try:
+            return factory(*args)
+        except tkinter.TclError as exc:
+            if not is_tcl_startup_glitch(exc) or attempt == attempts:
+                raise
+            reason = str(exc)[:80]
+            warnings.warn(f"Tk failed to start (attempt {attempt}/{attempts}), retrying: {reason!r}", stacklevel=2)
+            time.sleep(delay * attempt)
 
 
 class Dialogs:
@@ -90,9 +121,11 @@ class Harness:
 def _display():
     tk = pytest.importorskip("tkinter")
     try:
-        probe = tk.Tk()
+        probe = create_with_retry(tk.Tk)
         probe.destroy()
-    except tk.TclError:
+    except tk.TclError as exc:
+        if is_tcl_startup_glitch(exc):
+            raise  # a broken Tcl installation must fail the run, not silently skip every GUI test
         pytest.skip("no display available for Tk")
 
 
@@ -142,7 +175,7 @@ def h(_display, dialogs, monkeypatch):
 
     from app.gui.app import BookstoreApp
 
-    window = BookstoreApp(services)
+    window = create_with_retry(BookstoreApp, services)
     callback_errors = []
     # An exception inside a button callback must fail the test, not just pop up a dialog.
     window.report_callback_exception = lambda exc, val, tb: callback_errors.append(val)
