@@ -143,7 +143,15 @@
 - [ ] Not verified: a real run of the `.exe` on a clean Windows machine (SmartScreen / antivirus on an unsigned binary)
 - [ ] Not done: window/exe icon (needs a `.ico` file)
 
+## v0.8.0 — GUI tests
+- [x] `../tests/gui/`: pytest coverage of the GUI flows — login/registration, navigation and role-dependent buttons, catalog search, purchase, purchase history, top-up dialog, admin panel (add / edit / delete / restore / import): 87 screen tests. `test_gui_robustness.py` now lives in the same folder
+- [x] Screens run against the **real services** on the existing fake repositories (no database); the tests check the exact messages a user sees. `GuiUserRepo` returns a copy of the user on login, like the real repository (the plain fake returns the stored object, which made a purchase subtract the price twice)
+- [x] Blocking `messagebox.askyesno` / `filedialog.askopenfilename` are patched (the test sets the answer and reads what was asked); an exception inside a button callback or an unexpected message box fails the test instead of passing silently
+- [x] The package is skipped when Tk or a display is missing, so a headless `pytest` still passes
+- [x] CI: the `test` job installs `xvfb` and runs `xvfb-run -a pytest`, so the GUI tests run there instead of being skipped
+- [x] Sanity check: 20 deliberate mutations of the screens (admin button always/never shown, balance or table not refreshed after a purchase, quantity `0` accepted, lost error/success messages, delete without confirmation, …) — all 20 caught by `tests/gui`
+- [x] Windows / Python 3.14: `Tk()` itself failed at random in the first seconds of a run (`Can't find a usable init.tcl` / `tk.tcl`, `invalid command name "tcl_findLibrary"`; 9 of 10 runs, 1-2 tests each). `create_with_retry()` in `../tests/gui/conftest.py` retries window creation on exactly these Tcl library-loading errors (a `UserWarning` per retry; other errors, e.g. no display, are raised at once); covered by `../tests/gui/test_harness.py` (7 tests). With it `pytest tests/gui` passed 8 of 8 runs
+- [ ] Not understood: the cause of the Tcl start-up failures — the retry absorbs the glitch (1-2 warnings per run on that machine), it does not remove it. `gc.collect()` between tests was tried and did not help
+
 ## v1.0 — Release
-- Tests (`pytest`) for `db` and `services`
-- CI (lint + tests)
 - Packaging, final README/GUI screenshots

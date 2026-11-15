@@ -118,10 +118,20 @@ BookByteStore/
     ├── test_book_repository.py                        # BookRepository SQL contract tests
     ├── test_user_repository.py                        # UserRepository & real bcrypt tests
     ├── test_database.py                               # how connections are opened (autocommit read conn, FOUND_ROWS, DB name checks)
-    ├── test_gui_robustness.py                         # unhandled Tk callback errors are logged and shown (needs a display; skipped otherwise)
     ├── test_purchase_repository.py                    # PurchaseRepository SQL contract tests
     ├── test_env.py                                    # .env / default log path do not depend on the working directory
     ├── test_packaging.py                              # guards for the PyInstaller setup (spec entry point, .gitignore)
+    ├── gui/                                           # GUI flow tests: real services on fake repositories (needs a display)
+    │   ├── conftest.py                                # app harness, patched messagebox/filedialog, fake-repo wiring, Tk start-up retry
+    │   ├── helpers.py                                 # find/click buttons, read tables
+    │   ├── test_harness.py                            # tests of the retry helper (Tcl start-up glitches on Windows)
+    │   ├── test_gui_robustness.py                     # unhandled Tk callback errors are logged and shown
+    │   ├── test_auth_screens.py                       # login & registration
+    │   ├── test_navigation.py                         # Home / Catalog / History / Admin, role-dependent buttons
+    │   ├── test_catalog_screen.py                     # browsing, search (incl. search-log warning), purchase
+    │   ├── test_history_screen.py                     # purchase history
+    │   ├── test_top_up_dialog.py                      # top-up dialog
+    │   └── test_admin_screens.py                      # add / edit / delete / restore / import
     └── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
         ├── integration/                                   # real-MySQL tests (opt-in, see "Running Tests")
         ├── conftest.py                                    # real MySQL connection/DB fixtures & BBS_TEST_DB_* safeguards
@@ -159,6 +169,18 @@ pytest
 pytest --cov=app --cov-report=term-missing  # coated
 ruff check app tests                        # linter
 ```
+
+### GUI tests
+
+`tests/gui` drives the real Tk screens against the real services on fake repositories (no database).
+They need Tk and a display and are skipped automatically without one. On a headless Linux machine / CI:
+
+```bash
+sudo apt-get install -y xvfb python3-tk     # once
+xvfb-run -a pytest tests/gui -v
+```
+
+On Windows and macOS a normal `pytest` runs them. Blocking `messagebox` / `filedialog` calls are replaced in the tests.
 
 Coverage: `services/` and `db/` repositories (63 tests: unit tests using fake repositories + repository 
 tests using `pymysql` connection mocks that verify the actual SQL).
