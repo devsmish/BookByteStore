@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+## v0.8.0 - GUI tests - 15/11/2026
+
+### Added
+- `../tests/gui/` — pytest coverage of the GUI flows (login/register, navigation, role-dependent buttons, search,
+  purchase, top-up, admin add/edit/delete/restore/import). Screens run against the real services on the fake
+  repositories; `messagebox` / `filedialog` are patched; an exception inside a button callback fails the test.
+  Skipped automatically when Tk or a display is missing.
+
+### Changed
+- CI: the `test` job runs pytest under `xvfb-run`, so the GUI tests run there instead of being skipped.
+
 ## v0.7.0 — Windows executable (PyInstaller) — 27/10/2026
 
 ### Added
