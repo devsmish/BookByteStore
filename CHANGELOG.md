@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+## v0.8.1 - Repository hygiene - 23/11/2026
+
+### Removed
+- `use_env_example.py`: a scratch script (read a `country` table from a sample DB); nothing referenced it.
+
+### Changed
+- `requirements.txt` is runtime-only (pymongo, PyMySQL, python-dotenv, bcrypt). Test and lint tools moved to the new
+  `requirements-dev.txt` (`-r requirements.txt` + pytest, pytest-cov, ruff). The exe build environment
+  (`requirements-build.txt`) no longer installs pytest/ruff.
+- CI: both jobs install `requirements-dev.txt`; the `setup-python` pip cache is keyed on both requirements files.
+
 ## v0.8.0 - GUI tests - 15/11/2026
 
 ### Added

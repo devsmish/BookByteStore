@@ -66,7 +66,9 @@ BookByteStore/
 ├── pytest.ini                 # pytest suite configuration
 ├── bookstore.spec             # PyInstaller recipe: single-file GUI executable
 ├── build_scripts/             # build.py + README: building the executable
+├── requirements.txt           # runtime dependencies only
 ├── requirements-build.txt     # PyInstaller, on top of requirements.txt
+├── requirements-dev.txt       # pytest, pytest-cov, ruff, on top of requirements.txt
     app/
     ├── database.py            # connection config (read/edit) from .env, connection error logging & DB initialization/migrations
     ├── config.py               # list of admins (ADMIN_USERNAMES) from .env
@@ -164,7 +166,7 @@ Title,Author,Price,Stock
 
 ## Running Tests
 ```bash
-pip install -r requirements.txt
+pip install -r requirements-dev.txt         # runtime + pytest, pytest-cov, ruff
 pytest
 pytest --cov=app --cov-report=term-missing  # coated
 ruff check app tests                        # linter
