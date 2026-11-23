@@ -153,5 +153,11 @@
 - [x] Windows / Python 3.14: `Tk()` itself failed at random in the first seconds of a run (`Can't find a usable init.tcl` / `tk.tcl`, `invalid command name "tcl_findLibrary"`; 9 of 10 runs, 1-2 tests each). `create_with_retry()` in `../tests/gui/conftest.py` retries window creation on exactly these Tcl library-loading errors (a `UserWarning` per retry; other errors, e.g. no display, are raised at once); covered by `../tests/gui/test_harness.py` (7 tests). With it `pytest tests/gui` passed 8 of 8 runs
 - [ ] Not understood: the cause of the Tcl start-up failures — the retry absorbs the glitch (1-2 warnings per run on that machine), it does not remove it. `gc.collect()` between tests was tried and did not help
 
+## v0.8.1 — Repository hygiene
+- [x] Removed the stray `use_env_example.py`
+- [x] Dependencies split: `../requirements.txt` (runtime only), `../requirements-dev.txt` (pytest, pytest-cov, ruff); `../requirements-build.txt` still builds on top of `requirements.txt`
+- [x] CI: both jobs install `requirements-dev.txt`; pip cache keyed on both files
+- [ ] Not verified: the CI run on GitHub and a rebuild of the exe from the slimmer environment
+
 ## v1.0 — Release
 - Packaging, final README/GUI screenshots
