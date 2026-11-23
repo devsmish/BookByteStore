@@ -17,9 +17,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
+          # the cache key must cover both files, otherwise bumping a dev tool would not refresh it
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Lint (ruff)
         run: ruff check app tests
@@ -66,9 +70,13 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
+          # the cache key must cover both files, otherwise bumping a dev tool would not refresh it
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: pip install -r requirements-dev.txt
 
       - name: Integration tests
         run: pytest tests/integration -v
